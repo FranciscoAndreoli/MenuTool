@@ -19,16 +19,19 @@ class VouchersAndAlcohol:
     def slot_changeVoucherAlcoholSelectedItems(self,datos,items,Voucher,Alcohol):
         item = str()
         for j in range(0,len(items)):
-            for h in range(0,len(datos["MenuSections"])):
-                for k in range(0,len(datos["MenuSections"][h]["MenuItems"])):
-                    item == datos["MenuSections"][h]["MenuItems"][k]['Name']
-                    if items in items[j] or "Change All" in items[j]:
-                        if Voucher == True:
-                            datos["MenuSections"][h]["MenuItems"][k]['ExcludeFromVoucherDiscounting'] = True
-                        if Alcohol == True:
-                            datos["MenuSections"][h]["MenuItems"][k]['Alcohol'] = True
-#
-##changes the full prices for the selected items on the Smart Search
+            for h in range(0,len(datos["MenuSections"])): #recorre de 0 a 4
+                if datos["MenuSections"][h]["Name"] in items[j]:
+                    for k in range(0,len(datos["MenuSections"][h]["MenuItems"])):
+                        item = datos["MenuSections"][h]["MenuItems"][k]['Name']
+                        if item in items[j] or "Change All" in items[j]: #o items?
+                            if Voucher == True:
+                                datos["MenuSections"][h]["MenuItems"][k]['ExcludeFromVoucherDiscounting'] = True
+                            if Alcohol == True:
+                                datos["MenuSections"][h]["MenuItems"][k]['Alcohol'] = True
+                else:
+                    pass
+
+##changes the tags for the selected items on the Smart Search
     def slot_changeVoucherAlcoholSelectedSS(self,datos,SSitems,text,Voucher,Alcohol):
         #for t in range(0,len(text)):
         for j in range(0,len(SSitems)):
