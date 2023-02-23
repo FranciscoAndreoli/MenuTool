@@ -23,7 +23,7 @@ class VouchersAndAlcohol:
                 if datos["MenuSections"][h]["Name"] in items[j]:
                     for k in range(0,len(datos["MenuSections"][h]["MenuItems"])):
                         item = datos["MenuSections"][h]["MenuItems"][k]['Name']
-                        if item in items[j] or "Change All" in items[j]: #o items?
+                        if item in items[j] or "Change All" in items[j]:
                             if Voucher == True:
                                 datos["MenuSections"][h]["MenuItems"][k]['ExcludeFromVoucherDiscounting'] = True
                             if Alcohol == True:

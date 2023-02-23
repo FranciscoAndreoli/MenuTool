@@ -2,8 +2,8 @@ from PySide6.QtWidgets import QFileDialog, QMessageBox, QMainWindow
 from PySide6.QtGui import QIcon
 from jsonSection import jsonSection
 from VouchersAndAlcohol import VouchersAndAlcohol
+from parsejson import parsejson
 #from CocaColaUpdates import CocaColaUpdates
-from pathlib import Path
 from ui_form import Ui_MainWindow
 
 datos = dict()
@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         self.ui.actionRemove_Tax_from_All_Sections.triggered.connect(self.clickedRemoveTax)
         self.ui.actionApply_Tax_to_All_Sections.triggered.connect(self.clickedAllSections)
         #self.ui.actionCoca_ColaChecker.triggered.connect(self.clickedCocaColaChecker)
-        #self.ui.actionParse_JSON.triggered.connect(self.clickedParseJSON)
+        self.ui.actionParse_JSON.triggered.connect(self.clickedParse_JSON)
 
         global section
         section = list()
@@ -156,9 +156,9 @@ class MainWindow(QMainWindow):
         #print(archivo) #archivo es una tupla
         #filePath = archivo[0] #filepath es un string
 
-        if archivo[0].lower().endswith('.txt'):
+        """if archivo[0].lower().endswith('.txt'):
             p = Path(archivo[0])
-            new_p = Path(p.parent.as_posix() + '/' + p.stem + '.json')
+            new_p = Path(p.parent.as_posix() + '/' + p.stem + '.json')"""
 
         global file
         self.clear_all()
@@ -938,8 +938,7 @@ class MainWindow(QMainWindow):
         self.ui.leIncrease.clear()
         self.ui.addedSS_2.clear()
 
-#############################################################################################################################
-#############################################################################################################################
+
 #DRINKS MODIFICATION
 
 #button that applies Drinks to the selected sections [DRINKS]
@@ -997,6 +996,14 @@ class MainWindow(QMainWindow):
         self.ui.smartSearchList_3.clear()
         self.ui.addedSS_3.clear()
 
+#transform menu json into POS json.
+    def clickedParse_JSON(self):
+        global datos
+        if datos == None:
+            QMessageBox.warning(self, 'Warning', 'You must load a Json File first!',QMessageBox.Ok)
+        else:
+            parsejson.slot_generateNewJSON(parsejson, datos)
+            QMessageBox.information(self, 'Success!','The POS Json file has been created, check your desktop.',QMessageBox.Ok)
 
 
 
@@ -1011,11 +1018,6 @@ class MainWindow(QMainWindow):
             'All the items have been updated',QMessageBox.Ok)
         self.clear_all()
 """
-
-def clickedParseJSON(self): #transform menu json into POS json.
-    global datos
-    if datos == None:#datos es el JSON cargado
-        QMessageBox.warning(self, 'Warning', 'You must load a Json File first!',QMessageBox.Ok)
 
 
 
