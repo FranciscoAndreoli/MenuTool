@@ -6,7 +6,7 @@ class parsejson:
     def __init__(self):
         pass
 
-    def slot_generateNewJSON(self, datos):
+    def slot_generateNewJSON(self, datos): 
 
         def generate_UUID(): #Universally Unique Identifier
             return str(uuid.uuid4())
@@ -19,6 +19,16 @@ class parsejson:
                 return 0
             elif TaxRateId in tax_dict:
                 return tax_dict[TaxRateId]
+
+        def getMoPrices(optionSet):
+            priceList = []
+            for price in optionSet['MenuItemOptionSetItems']:
+                priceList.append(price['Price'])
+            minimumPrice = min(priceList)
+            priceList = [x - minimumPrice for x in priceList]
+            roundedPriceList =  [float(str(x)[:4]) for x in priceList]
+            print (roundedPriceList)
+            return roundedPriceList
 
 
         if len(datos["TaxRates"]) != 0:
@@ -44,12 +54,12 @@ class parsejson:
 
         for section in datos['MenuSections']:
             new_category = {
-            "id": generate_UUID(),
-            "caption": section['Name'],
-            "enabled": section['IsAvailable'],
-            "notes": section["Description"],
-            "items": [],
-            "overrides": []
+                "id": generate_UUID(),
+                "caption": section['Name'],
+                "enabled": section['IsAvailable'],
+                "notes": section["Description"],
+                "items": [],
+                "overrides": []
             }
 
             for item in section['MenuItems']:
@@ -73,19 +83,130 @@ class parsejson:
                         "dineInPrice": item['Price'],
                         "dineInTax": taxValue,
                         "dineInTaxable": booleano,
-                        "priceBandId": "cc4efdb0-78a1-11ed-a7b2-713c0ffdd9d3",
+                        "priceBandId": 'cc4efdb0-78a1-11ed-a7b2-713c0ffdd9d3',
                         "takeawayPrice": item['Price'],
                         "takeawayTax": taxValue,
                         "takeawayTaxable": booleano
-                    }],
-                        "modifierMembers": [],
+                    } ],
+                    "modifierMembers": [],
                 }
+                for MO in item["MenuItemOptionSets"]:
+                    if MO["IsMasterOptionSet"] == True:
+
+                        new_item["pricingProfiles"][0]["collectionPrice"] = MO["MinPrice"]
+                        new_item["pricingProfiles"][0]["deliveryPrice"] = MO["MinPrice"]
+                        new_item["pricingProfiles"][0]["dineInPrice"] = MO["MinPrice"]
+                        new_item["pricingProfiles"][0]["takeawayPrice"] = MO["MinPrice"]
 
                 new_category["items"].append(new_item)
 
+                for modifier in item['MenuItemOptionSets']:
+
+                    new_menuOptionSet = { # modifierMembers
+                        "caption": modifier['Name'],
+                        "enabled": True,
+                        "modifierId": modifier['MenuItemOptionSetId'],
+                        "overrides": []
+                    }
+                    new_item["modifierMembers"].append(new_menuOptionSet)
+
+                for optionSet in item['MenuItemOptionSets']:
+
+                    if optionSet['IsMasterOptionSet'] == True:
+
+                        priceList = getMoPrices(optionSet)
+
+                        new_optionSet = { # MO
+                            "canSameItemBeSelectedMultipleTimes": False,
+                            "caption": optionSet['Name'],
+                            "id": optionSet['MenuItemOptionSetId'],
+                            "enabled": True,
+                            "max": 1,
+                            "min": 1,
+                            "position": -1,
+                            "overrides": [],
+                            "items": []
+                        }
+                        my_dict["modifiers"].append(new_optionSet)
+
+                        for index, item in enumerate(optionSet['MenuItemOptionSetItems']):
+                            new_item_in_optionSet = {
+                                "caption": item['Name'],
+                                "enabled": item['IsAvailable'],
+                                "id": item['MenuItemOptionSetItemId'],
+                                "overrides": [],
+                                "pricingProfiles": [{
+                                    "collectionPrice": None,
+                                    "collectionTax": 0,
+                                    "collectionTaxable": False,
+                                    "deliveryPrice": None,
+                                    "deliveryTax": 0,
+                                    "deliveryTaxable": False,
+                                    "dineInPrice": None,
+                                    "dineInTax": 0,
+                                    "dineInTaxable": False,
+                                    "priceBandId": 'cc4efdb0-78a1-11ed-a7b2-713c0ffdd9d3',
+                                    "takeawayPrice": None,
+                                    "takeawayTax": 0,
+                                    "takeawayTaxable": False
+                                    }],
+                                "modifierMembers": []
+                                }
+                            # update pricingProfiles for this item
+                            for price in new_item_in_optionSet["pricingProfiles"]:
+                                price["collectionPrice"] = priceList[index]
+                                price["deliveryPrice"] = priceList[index]
+                                price["dineInPrice"] = priceList[index]
+                                price["takeawayPrice"] = priceList[index]
+                            # add the updated item to the new_optionSet
+                            new_optionSet["items"].append(new_item_in_optionSet)
+
+                    else:
+
+                        new_optionSet = { # modifiers
+                            "canSameItemBeSelectedMultipleTimes": False,
+                            "caption": optionSet['Name'],
+                            "id": optionSet['MenuItemOptionSetId'],
+                            "enabled": True,
+                            "max": optionSet['MaxSelectCount'],
+                            "min": optionSet['MinSelectCount'],
+                            "position": optionSet['DisplayOrder'],
+                            "overrides": [],
+                            "items": []
+                        }
+
+                        my_dict["modifiers"].append(new_optionSet)
+
+                        for item in optionSet['MenuItemOptionSetItems']:
+
+                            new_item_in_optionSet = { # items inside modifiers
+                                "caption": item['Name'],
+                                "enabled": item['IsAvailable'],
+                                "id": item['MenuItemOptionSetItemId'],
+                                "overrides": [],
+                                "pricingProfiles": [ {
+                                    "collectionPrice": item['Price'],
+                                    "collectionTax": 0,
+                                    "collectionTaxable": False,
+                                    "deliveryPrice": item['Price'],
+                                    "deliveryTax": 0,
+                                    "deliveryTaxable": False,
+                                    "dineInPrice": item['Price'],
+                                    "dineInTax": 0,
+                                    "dineInTaxable": False,
+                                    "priceBandId": 'cc4efdb0-78a1-11ed-a7b2-713c0ffdd9d3',
+                                    "takeawayPrice": item['Price'],
+                                    "takeawayTax": 0,
+                                    "takeawayTaxable": False
+                                } ],
+                                "modifierMembers": []
+                            }
+
+                            new_optionSet["items"].append(new_item_in_optionSet)
+
             my_dict["categories"].append(new_category)
 
-        print(json.dumps(my_dict, indent=2))
+        #print(json.dumps(my_dict, indent=2))
 
         # specify the path to save the file, including the desired name
         path = os.path.expanduser("~/Desktop/my_POS_JSON.json")
