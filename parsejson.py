@@ -29,11 +29,6 @@ class parsejson:
                 tax_dict = {tax_rate["TaxRateId"]: tax_rate["Rate"] for tax_rate in datos["TaxRates"]}
                 #print(tax_dict)
                 return tax_dict
-                # return example: {
-                #                   20505431: 5,
-                #                   20505432: 6,
-                #                   20505422: 7
-                #                 }
             else:
                 return {} #empty dictionary
 
@@ -68,6 +63,7 @@ class parsejson:
                 "categories": [],
                 "modifiers": []
             }
+
         for section in datos['MenuSections']:
             new_category = {
                 "id": generate_UUID(),
@@ -110,7 +106,7 @@ class parsejson:
 
                 for masterOption in item["MenuItemOptionSets"]:
                     if masterOption["IsMasterOptionSet"] == True:
-                        # if item have a master option, it´s price will be the minimum price of the master option.
+                        # if item have a master option, its price will be the minimum price of the master option.
                         new_item["pricingProfiles"][0]["collectionPrice"] = masterOption["MinPrice"]
                         new_item["pricingProfiles"][0]["deliveryPrice"] = masterOption["MinPrice"]
                         new_item["pricingProfiles"][0]["dineInPrice"] = masterOption["MinPrice"]
@@ -130,58 +126,9 @@ class parsejson:
 
                 for optionSet in item['MenuItemOptionSets']:
 
-                    if optionSet['IsMasterOptionSet'] == True and len(optionSet['MenuItemOptionSetItems']) != 0:
+                    isMasterOption = optionSet['IsMasterOptionSet'] == True and len(optionSet['MenuItemOptionSetItems']) != 0
 
-                        priceList = getMoPrices(optionSet)
-
-                        new_optionSet = { # Master Option
-                            "canSameItemBeSelectedMultipleTimes": False,
-                            "caption": optionSet['Name'],
-                            "id": optionSet['MenuItemOptionSetId'],
-                            "enabled": True,
-                            "max": 1,
-                            "min": 1,
-                            "position": -1,
-                            "overrides": [],
-                            "items": []
-                        }
-                        my_dict["modifiers"].append(new_optionSet)
-
-                        for index, item in enumerate(optionSet['MenuItemOptionSetItems']):
-                            new_item_in_optionSet = {
-                                "caption": item['Name'],
-                                "enabled": item['IsAvailable'],
-                                "id": item['MenuItemOptionSetItemId'],
-                                "overrides": [],
-                                "pricingProfiles": [{
-                                    "collectionPrice": None,
-                                    "collectionTax": 0,
-                                    "collectionTaxable": False,
-                                    "deliveryPrice": None,
-                                    "deliveryTax": 0,
-                                    "deliveryTaxable": False,
-                                    "dineInPrice": None,
-                                    "dineInTax": 0,
-                                    "dineInTaxable": False,
-                                    "priceBandId": 'cc4efdb0-78a1-11ed-a7b2-713c0ffdd9d3',
-                                    "takeawayPrice": None,
-                                    "takeawayTax": 0,
-                                    "takeawayTaxable": False
-                                    }],
-                                "modifierMembers": []
-                                }
-                            # update pricingProfiles for this item
-                            for price in new_item_in_optionSet["pricingProfiles"]:
-                                price["collectionPrice"] = priceList[index]
-                                price["deliveryPrice"] = priceList[index]
-                                price["dineInPrice"] = priceList[index]
-                                price["takeawayPrice"] = priceList[index]
-                            # add the updated item to the new_optionSet
-                            new_optionSet["items"].append(new_item_in_optionSet)
-
-                    else:
-
-                        new_optionSet = { # modifiers
+                    new_optionSet = { # modifiers
                             "canSameItemBeSelectedMultipleTimes": False,
                             "caption": optionSet['Name'],
                             "id": optionSet['MenuItemOptionSetId'],
@@ -193,108 +140,55 @@ class parsejson:
                             "items": []
                         }
 
-                        my_dict["modifiers"].append(new_optionSet)
+                    for index, item in enumerate(optionSet['MenuItemOptionSetItems']):
 
-                        for item in optionSet['MenuItemOptionSetItems']:
+                        taxValue = get_tax(item["TaxRateId"]) #item["TaxRateId"] is the tax id for the item
+                        booleano = False if item["TaxRateId"] is None else True
 
-                            new_item_in_optionSet = { # items inside modifiers
-                                "caption": item['Name'],
-                                "enabled": item['IsAvailable'],
-                                "id": item['MenuItemOptionSetItemId'],
-                                "overrides": [],
-                                "pricingProfiles": [ {
-                                    "collectionPrice": item['Price'],
-                                    "collectionTax": 0,
-                                    "collectionTaxable": False,
-                                    "deliveryPrice": item['Price'],
-                                    "deliveryTax": 0,
-                                    "deliveryTaxable": False,
-                                    "dineInPrice": item['Price'],
-                                    "dineInTax": 0,
-                                    "dineInTaxable": False,
-                                    "priceBandId": 'cc4efdb0-78a1-11ed-a7b2-713c0ffdd9d3',
-                                    "takeawayPrice": item['Price'],
-                                    "takeawayTax": 0,
-                                    "takeawayTaxable": False
-                                } ],
-                                "modifierMembers": []
-                            }
-
-                            new_optionSet["items"].append(new_item_in_optionSet)
-
-            my_dict["categories"].append(new_category)
-        
-        
-        for section in datos['MenuSections']:
-            for item in section['MenuItems']:
-        
-        
-                for optionSet in item['MenuItemOptionSets']:
-        
-                    new_optionSet = {
-                        "canSameItemBeSelectedMultipleTimes": False,
-                        "caption": optionSet['Name'],
-                        "id": optionSet['MenuItemOptionSetId'],
-                        "enabled": True,
-                        "max": optionSet['MaxSelectCount'],
-                        "min": optionSet['MinSelectCount'],
-                        "position": optionSet['DisplayOrder'],
-                        "overrides": [],
-                        "items": []
-                    }
-        
-                    def getMoPrices(optionSet):
-                        new_moPrices = []
-        
-                        if optionSet['IsMasterOptionSet'] == True:
-                            for moPrices in optionSet['MenuItemOptionSetItems']:
-                                new_moPrices.append(moPrices['Price'])
-        
-                        return new_moPrices
-        
-                    listMasterOptionPrices = getMoPrices(optionSet)
-        
-                    if listMasterOptionPrices:
-                        print('antes de filtrar', listMasterOptionPrices)
-                        lowestPrice =  min(listMasterOptionPrices)
-                        print('el mas bajo', lowestPrice)
-        
-                        for priceDifference in listMasterOptionPrices:
-                            newPrices = priceDifference - lowestPrice
-                            print('nuevo precio', newPrices)
-        
-                    for option in optionSet['MenuItemOptionSetItems']:
-        
-                        taxValue = get_tax(option["TaxRateId"])
-                        booleano = False if option["TaxRateId"] is None else True
-        
-                        new_option = {
-                            "caption": option['Name'],
-                            "enabled": option['IsAvailable'],
-                            "id": option['MenuItemOptionSetItemId'],
+                        new_item_in_optionSet = { # items inside modifiers
+                            "caption": item['Name'],
+                            "enabled": item['IsAvailable'],
+                            "id": item['MenuItemOptionSetItemId'],
                             "overrides": [],
                             "pricingProfiles": [ {
-                                "collectionPrice": option['Price'],
+                                "collectionPrice": item['Price'],
                                 "collectionTax": taxValue,
                                 "collectionTaxable": booleano,
-                                "deliveryPrice": option['Price'],
+                                "deliveryPrice": item['Price'],
                                 "deliveryTax": taxValue,
                                 "deliveryTaxable": booleano,
-                                "dineInPrice": option['Price'],
+                                "dineInPrice": item['Price'],
                                 "dineInTax": taxValue,
                                 "dineInTaxable": booleano,
-                                "priceBandId": "cc4efdb0-78a1-11ed-a7b2-713c0ffdd9d3",
-                                "takeawayPrice": option['Price'],
+                                "priceBandId": 'cc4efdb0-78a1-11ed-a7b2-713c0ffdd9d3',
+                                "takeawayPrice": item['Price'],
                                 "takeawayTax": taxValue,
                                 "takeawayTaxable": booleano
                             } ],
                             "modifierMembers": []
                         }
-        
-                        new_optionSet["items"].append(new_option)
-        
-        
+
+                        if isMasterOption:
+
+                            priceList = getMoPrices(optionSet)
+
+                            new_item_in_optionSet['pricingProfiles'][0]['collectionPrice'] = priceList[index]
+                            new_item_in_optionSet['pricingProfiles'][0]['deliveryPrice'] = priceList[index]
+                            new_item_in_optionSet['pricingProfiles'][0]['dineInPrice'] = priceList[index]
+                            new_item_in_optionSet['pricingProfiles'][0]['takeawayPrice'] = priceList[index]
+
+                        new_optionSet["items"].append(new_item_in_optionSet)
+
+                    if isMasterOption:
+
+                        new_optionSet['max'] = 1
+                        new_optionSet['min'] = 1
+                        new_optionSet['position'] = -1
+
                     my_dict["modifiers"].append(new_optionSet)
+
+
+            my_dict["categories"].append(new_category)
 
         #print(json.dumps(my_dict, indent=2))
 
