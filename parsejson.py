@@ -8,39 +8,56 @@ class parsejson:
 
     def slot_generateNewJSON(self, datos): 
 
-        def generate_UUID(): #Universally Unique Identifier
+        def generate_UUID():
+            '''Returns a Universally Unique Identifier'''
             return str(uuid.uuid4())
 
-        def store_name(): #gets store name
+        def store_name():
+            '''Returns the name of the store'''
             return datos['Name']
 
         def get_tax(TaxRateId):
+            '''Returns the tax value of an item for a given TaxRateId'''
             if TaxRateId == None:
                 return 0
-            elif TaxRateId in tax_dict:
-                return tax_dict[TaxRateId]
+            elif TaxRateId in tax_rates_dict():
+                return tax_rates_dict()[TaxRateId]
+
+        def tax_rates_dict():
+            '''Returns a dictionary with the tax rates of the menu'''
+            if len(datos["TaxRates"]) != 0:
+                tax_dict = {tax_rate["TaxRateId"]: tax_rate["Rate"] for tax_rate in datos["TaxRates"]}
+                #print(tax_dict)
+                return tax_dict
+                # return example: {
+                #                   20505431: 5,
+                #                   20505432: 6,
+                #                   20505422: 7
+                #                 }
+            else:
+                return {} #empty dictionary
 
         def getMoPrices(optionSet):
+            '''Returns a list with the prices of the Master Options of an item'''
             priceList = []
             for price in optionSet['MenuItemOptionSetItems']:
                 priceList.append(price['Price'])
+
             minimumPrice = min(priceList)
             priceList = [x - minimumPrice for x in priceList]
-            roundedPriceList =  [float(str(x)[:4]) for x in priceList]
-            print (roundedPriceList)
-            return roundedPriceList
+            PriceList =  [float(str(x)[:4]) for x in priceList] #shorten the number of decimal places to two
+            #print (roundedPriceList)
+            return PriceList
 
+        def getImage(imageId):
+            '''Returns the URL of the image of an item'''
+            if imageId == None:
+                return None
+            else:
+                image = item["ImageUrl"]
+                resizedImage = "{}?w={}&h={}".format(image, 225, 255) #resize image to 225x255
+                return resizedImage
 
-        if len(datos["TaxRates"]) != 0:
-            tax_dict = {tax_rate["TaxRateId"]: tax_rate["Rate"] for tax_rate in datos["TaxRates"]}
-            print(tax_dict)
-            # Output example: {
-            #                   20505431: 5,
-            #                   20505432: 6,
-            #                   20505422: 7
-            #                 }
-        else:
-            pass
 
         my_dict = {
                 "franchisorId": generate_UUID(),
@@ -64,7 +81,7 @@ class parsejson:
 
             for item in section['MenuItems']:
 
-                taxValue = get_tax(item["TaxRateId"])
+                taxValue = get_tax(item["TaxRateId"]) #item["TaxRateId"] is the tax id for the item
                 booleano = False if item["TaxRateId"] is None else True
 
                 new_item = {
@@ -72,6 +89,7 @@ class parsejson:
                     "enabled": item['IsAvailable'],
                     "id": generate_UUID(),
                     "notes": item["Description"],
+                    "imageUrl": getImage(item["ImageUrl"]),
                     "overrides": [],
                     "pricingProfiles": [ {
                         "collectionPrice": item['Price'],
@@ -90,19 +108,20 @@ class parsejson:
                     } ],
                     "modifierMembers": [],
                 }
-                for MO in item["MenuItemOptionSets"]:
-                    if MO["IsMasterOptionSet"] == True:
 
-                        new_item["pricingProfiles"][0]["collectionPrice"] = MO["MinPrice"]
-                        new_item["pricingProfiles"][0]["deliveryPrice"] = MO["MinPrice"]
-                        new_item["pricingProfiles"][0]["dineInPrice"] = MO["MinPrice"]
-                        new_item["pricingProfiles"][0]["takeawayPrice"] = MO["MinPrice"]
+                for masterOption in item["MenuItemOptionSets"]:
+                    if masterOption["IsMasterOptionSet"] == True:
+                        # if item have a master option, it´s price will be the minimum price of the master option.
+                        new_item["pricingProfiles"][0]["collectionPrice"] = masterOption["MinPrice"]
+                        new_item["pricingProfiles"][0]["deliveryPrice"] = masterOption["MinPrice"]
+                        new_item["pricingProfiles"][0]["dineInPrice"] = masterOption["MinPrice"]
+                        new_item["pricingProfiles"][0]["takeawayPrice"] = masterOption["MinPrice"]
 
                 new_category["items"].append(new_item)
 
                 for modifier in item['MenuItemOptionSets']:
 
-                    new_menuOptionSet = { # modifierMembers
+                    new_menuOptionSet = {
                         "caption": modifier['Name'],
                         "enabled": True,
                         "modifierId": modifier['MenuItemOptionSetId'],
@@ -112,11 +131,11 @@ class parsejson:
 
                 for optionSet in item['MenuItemOptionSets']:
 
-                    if optionSet['IsMasterOptionSet'] == True:
+                    if optionSet['IsMasterOptionSet'] == True and len(optionSet['MenuItemOptionSetItems']) != 0:
 
                         priceList = getMoPrices(optionSet)
 
-                        new_optionSet = { # MO
+                        new_optionSet = { # Master Option
                             "canSameItemBeSelectedMultipleTimes": False,
                             "caption": optionSet['Name'],
                             "id": optionSet['MenuItemOptionSetId'],
@@ -214,7 +233,3 @@ class parsejson:
         # open the file for writing, and save the dictionary as JSON
         with open(path, 'w') as outfile:
             json.dump(my_dict, outfile)
-
-
-
-
