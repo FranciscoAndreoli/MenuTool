@@ -1002,7 +1002,7 @@ class MainWindow(QMainWindow):
         if datos == None:
             QMessageBox.warning(self, 'Warning', 'You must load a Json File first!',QMessageBox.Ok)
         else:
-            parsejson.slot_generateNewJSON(parsejson, datos)
+            parsejson.slot_generate_new_JSON(parsejson, datos)
             QMessageBox.information(self, 'Success!','The POS Json file has been created, check your desktop.',QMessageBox.Ok)
 
 
