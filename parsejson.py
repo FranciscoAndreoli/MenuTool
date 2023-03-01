@@ -6,7 +6,7 @@ class parsejson:
     def __init__(self):
         pass
 
-    def slot_generateNewJSON(self, datos):
+    def slot_generate_new_JSON(self, datos):
 
         def generate_UUID():
             '''Returns a Universally Unique Identifier'''
@@ -38,7 +38,7 @@ class parsejson:
             else:
                 return {} #empty dictionary
 
-        def getMoPrices(optionSet):
+        def get_mo_prices(optionSet):
             '''Returns a list with the prices of the Master Options of an item'''
             priceList = []
             for price in optionSet['MenuItemOptionSetItems']:
@@ -50,7 +50,7 @@ class parsejson:
             #print (roundedPriceList)
             return PriceList
 
-        def getImage(imageId):
+        def get_image(imageId):
             '''Returns the URL of the image of an item'''
             if imageId == None:
                 return None
@@ -90,7 +90,7 @@ class parsejson:
                     "enabled": item['IsAvailable'],
                     "id": generate_UUID(),
                     "notes": item["Description"],
-                    "imageUrl": getImage(item["ImageUrl"]),
+                    "imageUrl": get_image(item["ImageUrl"]),
                     "overrides": [],
                     "pricingProfiles": [ {
                         "collectionPrice": item['Price'],
@@ -176,7 +176,7 @@ class parsejson:
 
                         if isMasterOption:
 
-                            priceList = getMoPrices(optionSet)
+                            priceList = get_mo_prices(optionSet)
 
                             new_item_in_optionSet['pricingProfiles'][0]['collectionPrice'] = priceList[index]
                             new_item_in_optionSet['pricingProfiles'][0]['deliveryPrice'] = priceList[index]
