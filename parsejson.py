@@ -1,6 +1,7 @@
 import json
 import uuid
 import os
+from datetime import datetime, timedelta
 
 class parsejson:
     def __init__(self):
@@ -23,6 +24,7 @@ class parsejson:
             elif TaxRateId in tax_rates_dict():
                 return tax_rates_dict()[TaxRateId]
 
+
         def tax_rates_dict():
             '''Returns a dictionary with the tax rates of the menu'''
             if len(datos["TaxRates"]) != 0:
@@ -32,7 +34,8 @@ class parsejson:
             else:
                 return {} #empty dictionary
 
-        def getMoPrices(optionSet):
+
+        def get_mo_prices(optionSet):
             '''Returns a list with the prices of the Master Options of an item'''
             priceList = []
             for price in optionSet['MenuItemOptionSetItems']:
@@ -44,7 +47,7 @@ class parsejson:
             #print (roundedPriceList)
             return PriceList
 
-        def getImage(imageId):
+        def get_image(imageId):
             '''Returns the URL of the image of an item'''
             if imageId == None:
                 return None
@@ -53,8 +56,15 @@ class parsejson:
                 resizedImage = "{}?w={}&h={}".format(image, 225, 255) #resize image to 225x255
                 return resizedImage
 
+        def get_time_settings(section):
+            timeOptions = section['MenuSectionAvailability']['AvailableTimes']
+            return timeOptions
 
-        my_dict = {
+
+
+
+
+        myDict = {
                 "franchisorId": generate_UUID(),
                 "id": generate_UUID(),
                 "type": "Store",
@@ -65,13 +75,13 @@ class parsejson:
             }
 
         for section in datos['MenuSections']:
-            new_category = {
+            newCategory = {
                 "id": generate_UUID(),
                 "caption": section['Name'],
                 "enabled": section['IsAvailable'],
                 "notes": section["Description"],
-                "items": [],
-                "overrides": []
+                "overrides": [],
+                "items": []
             }
 
             for item in section['MenuItems']:
@@ -79,12 +89,12 @@ class parsejson:
                 taxValue = get_tax(item["TaxRateId"]) #item["TaxRateId"] is the tax id for the item
                 booleano = False if item["TaxRateId"] is None else True
 
-                new_item = {
+                newItem = {
                     "caption": item['Name'],
                     "enabled": item['IsAvailable'],
                     "id": generate_UUID(),
                     "notes": item["Description"],
-                    "imageUrl": getImage(item["ImageUrl"]),
+                    "imageUrl": get_image(item["ImageUrl"]),
                     "overrides": [],
                     "pricingProfiles": [ {
                         "collectionPrice": item['Price'],
@@ -104,15 +114,16 @@ class parsejson:
                     "modifierMembers": [],
                 }
 
+                
                 for masterOption in item["MenuItemOptionSets"]:
                     if masterOption["IsMasterOptionSet"] == True:
                         # if item have a master option, its price will be the minimum price of the master option.
-                        new_item["pricingProfiles"][0]["collectionPrice"] = masterOption["MinPrice"]
-                        new_item["pricingProfiles"][0]["deliveryPrice"] = masterOption["MinPrice"]
-                        new_item["pricingProfiles"][0]["dineInPrice"] = masterOption["MinPrice"]
-                        new_item["pricingProfiles"][0]["takeawayPrice"] = masterOption["MinPrice"]
+                        newItem["pricingProfiles"][0]["collectionPrice"] = masterOption["MinPrice"]
+                        newItem["pricingProfiles"][0]["deliveryPrice"] = masterOption["MinPrice"]
+                        newItem["pricingProfiles"][0]["dineInPrice"] = masterOption["MinPrice"]
+                        newItem["pricingProfiles"][0]["takeawayPrice"] = masterOption["MinPrice"]
 
-                new_category["items"].append(new_item)
+                newCategory["items"].append(newItem)
 
                 for modifier in item['MenuItemOptionSets']:
 
@@ -122,13 +133,13 @@ class parsejson:
                         "modifierId": modifier['MenuItemOptionSetId'],
                         "overrides": []
                     }
-                    new_item["modifierMembers"].append(new_menuOptionSet)
+                    newItem["modifierMembers"].append(new_menuOptionSet)
 
                 for optionSet in item['MenuItemOptionSets']:
 
                     isMasterOption = optionSet['IsMasterOptionSet'] == True and len(optionSet['MenuItemOptionSetItems']) != 0
 
-                    new_optionSet = { # modifiers
+                    newOptionSet = { # modifiers
                             "canSameItemBeSelectedMultipleTimes": False,
                             "caption": optionSet['Name'],
                             "id": optionSet['MenuItemOptionSetId'],
@@ -145,7 +156,7 @@ class parsejson:
                         taxValue = get_tax(item["TaxRateId"]) #item["TaxRateId"] is the tax id for the item
                         booleano = False if item["TaxRateId"] is None else True
 
-                        new_item_in_optionSet = { # items inside modifiers
+                        newItemInOptionSet = { # items inside modifiers
                             "caption": item['Name'],
                             "enabled": item['IsAvailable'],
                             "id": item['MenuItemOptionSetItemId'],
@@ -169,26 +180,74 @@ class parsejson:
                         }
 
                         if isMasterOption:
+                            
+                            priceList = get_mo_prices(optionSet)
 
-                            priceList = getMoPrices(optionSet)
+                            newItemInOptionSet['pricingProfiles'][0]['collectionPrice'] = priceList[index]
+                            newItemInOptionSet['pricingProfiles'][0]['deliveryPrice'] = priceList[index]
+                            newItemInOptionSet['pricingProfiles'][0]['dineInPrice'] = priceList[index]
+                            newItemInOptionSet['pricingProfiles'][0]['takeawayPrice'] = priceList[index]
 
-                            new_item_in_optionSet['pricingProfiles'][0]['collectionPrice'] = priceList[index]
-                            new_item_in_optionSet['pricingProfiles'][0]['deliveryPrice'] = priceList[index]
-                            new_item_in_optionSet['pricingProfiles'][0]['dineInPrice'] = priceList[index]
-                            new_item_in_optionSet['pricingProfiles'][0]['takeawayPrice'] = priceList[index]
-
-                        new_optionSet["items"].append(new_item_in_optionSet)
+                        newOptionSet["items"].append(newItemInOptionSet)
 
                     if isMasterOption:
 
-                        new_optionSet['max'] = 1
-                        new_optionSet['min'] = 1
-                        new_optionSet['position'] = -1
+                        newOptionSet['max'] = 1
+                        newOptionSet['min'] = 1
+                        newOptionSet['position'] = -1
+                        
+                    myDict["modifiers"].append(newOptionSet)
+                
+            timeAvailability = get_time_settings(section)
 
-                    my_dict["modifiers"].append(new_optionSet)
+            for times in timeAvailability:
+                
+                weekDayMapper = {
+                    0: "sundayEnabled",
+                    1: "mondayEnabled",
+                    2: "tuesdayEnabled",
+                    3: "wednesdayEnable",
+                    4: "thursdayEnable",
+                    5: "fridayEnable",
+                    6: "saturdayEnable"
+                }
+
+                weekDayKey = weekDayMapper[times['DayOfWeek']]
+
+                dayAvailability = False
+                
+                if times['StartTime'] != "01:00:00" and times['Period'] != "23:00:00":
+                    dayAvailability = True
+                
+                if dayAvailability == False:
+                    continue
+
+                timeString = times['StartTime']
+                timeNumber = datetime.strptime(timeString, "%H:%M:%S")
+
+                periodString = times['Period']
+                periodNumber = datetime.strptime(periodString, "%H:%M:%S")
+
+                sumTime = timeNumber + timedelta(hours=periodNumber.hour, minutes=periodNumber.minute, seconds=periodNumber.second)
+                
+                sumTimeString = sumTime.strftime("%H:%M:%S")
 
 
-            my_dict["categories"].append(new_category)
+                newTimeSettingOptions = {
+                    "id": generate_UUID(),
+                    "paramsJson": {
+                        "caption": section['Name'],
+                        weekDayKey: dayAvailability,
+                        "fromTime": times['StartTime'],
+                        "toTime": sumTimeString,
+                        "type": "generic"
+                    }
+                }
+
+                newCategory['overrides'].append(newTimeSettingOptions)
+
+
+            myDict["categories"].append(newCategory)
 
         #print(json.dumps(my_dict, indent=2))
 
@@ -197,4 +256,4 @@ class parsejson:
 
         # open the file for writing, and save the dictionary as JSON
         with open(path, 'w') as outfile:
-            json.dump(my_dict, outfile)
+            json.dump(myDict, outfile)
