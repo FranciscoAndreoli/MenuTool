@@ -62,7 +62,8 @@ class parsejson:
             timeOptions = item['DailySpecialHours']
             return timeOptions
 
-        def get_days_mapping():
+
+        def get_days_mapping(dayOfWeek):
             weekDayMapper = {
                 0: "sundayEnabled",
                 1: "mondayEnabled",
@@ -73,66 +74,71 @@ class parsejson:
                 6: "saturdayEnabled"
             }
 
-            weekDayKey = weekDayMapper[times['DayOfWeek']]
+            weekDayKey = weekDayMapper[dayOfWeek]
             return weekDayKey
 
-        def get_days_mapping_item():
-            weekDayMapper = {
-                0: "sundayEnabled",
-                1: "mondayEnabled",
-                2: "tuesdayEnabled",
-                3: "wednesdayEnabled",
-                4: "thursdayEnabled",
-                5: "fridayEnabled",
-                6: "saturdayEnabled"
+        def get_hours_availability(startTime, period):
+
+            timeString = startTime
+            timeNumber = datetime.strptime(timeString, "%H:%M:%S")
+
+            periodString = period
+            periodNumber = datetime.strptime(periodString, "%H:%M:%S")
+
+            sumTime = timeNumber + timedelta(hours=periodNumber.hour, minutes=periodNumber.minute, seconds=periodNumber.second)
+            
+            sumTimeString = sumTime.strftime("2023-03-01 %H:%M:%S")
+
+            timeNumberWithDate = timeNumber.strftime("2023-03-01 %H:%M:%S")
+
+            return sumTimeString, timeNumberWithDate
+
+
+        def get_params_to_string(weekDayKey, dayAvailability, timeNumberWithDate, sumTimeString, name):
+            paramsJson = {
+                weekDayKey: dayAvailability,
+                "fromTime": timeNumberWithDate,
+                "toTime": sumTimeString,
+                "name": name,
+                "enabled": True
             }
-
-            weekDayKey = weekDayMapper[timesItem['DayOfWeek']]
-            return weekDayKey
-
-        def get_hours_availability():
-
-            timeString = times['StartTime']
-            timeNumber = datetime.strptime(timeString, "%H:%M:%S")
-
-            periodString = times['Period']
-            periodNumber = datetime.strptime(periodString, "%H:%M:%S")
-
-            sumTime = timeNumber + timedelta(hours=periodNumber.hour, minutes=periodNumber.minute, seconds=periodNumber.second)
-            
-            sumTimeString = sumTime.strftime("2023-03-01 %H:%M:%S")
-
-            timeNumberWithDate = timeNumber.strftime("2023-03-01 %H:%M:%S")
-
-            return sumTimeString, timeNumberWithDate
-
-        def get_hours_availability_item():
-
-            timeString = timesItem['StartTime']
-            timeNumber = datetime.strptime(timeString, "%H:%M:%S")
-
-            periodString = timesItem['Period']
-            periodNumber = datetime.strptime(periodString, "%H:%M:%S")
-
-            sumTime = timeNumber + timedelta(hours=periodNumber.hour, minutes=periodNumber.minute, seconds=periodNumber.second)
-            
-            sumTimeString = sumTime.strftime("2023-03-01 %H:%M:%S")
-
-            timeNumberWithDate = timeNumber.strftime("2023-03-01 %H:%M:%S")
-
-            return sumTimeString, timeNumberWithDate
-
-        def get_params_to_string():
-            paramsJson = {weekDayKey: dayAvailability,"fromTime": timeNumberWithDate,"toTime": sumTimeString,"name": section['Name'],"enabled": True}
             
             paramsJsonToString = json.dumps(paramsJson)
             return paramsJsonToString
 
-        def get_params_to_string_item():
-            paramsJson = {weekDayKey: dayAvailability,"fromTime": timeNumberWithDate,"toTime": sumTimeString,"name": item['Name'],"enabled": True}
-            
-            paramsJsonToString = json.dumps(paramsJson)
-            return paramsJsonToString
+        def get_overrides(eachTime):
+            overrides = []
+            if eachTime != None:
+                for times in eachTime:
+
+                    weekDayKey = get_days_mapping(times['DayOfWeek'])
+
+                    dayAvailability = False
+                    
+                    if times['Period'] != "00:00:00":
+                        dayAvailability = True
+                    
+                    if dayAvailability == False:
+                        continue
+                    
+                    sumTimeString, timeNumberWithDate = get_hours_availability(times['StartTime'], times['Period'])
+                    
+                    paramsJsonToString = get_params_to_string(
+                        weekDayKey,
+                        dayAvailability,
+                        timeNumberWithDate,
+                        sumTimeString,
+                        section['Name']
+                    )
+                    
+                    newTimeSettingSection = {
+                        "id": generate_UUID(),
+                        "paramsJson": paramsJsonToString, 
+                        "type": "generic"
+                    }
+
+                    overrides.append(newTimeSettingSection)
+            return overrides
 
 
         myDict = {
@@ -156,31 +162,7 @@ class parsejson:
             }
 
             timeAvailabilitySection = get_time_settings_section(section)
-
-            if timeAvailabilitySection != None:
-                for times in timeAvailabilitySection:
-
-                    weekDayKey = get_days_mapping()
-
-                    dayAvailability = False
-                    
-                    if times['Period'] != "00:00:00":
-                        dayAvailability = True
-                    
-                    if dayAvailability == False:
-                        continue
-                    
-                    sumTimeString, timeNumberWithDate = get_hours_availability()
-                    
-                    paramsJsonToString = get_params_to_string()
-                    
-                    newTimeSettingSection = {
-                        "id": generate_UUID(),
-                        "paramsJson": paramsJsonToString, 
-                        "type": "generic"
-                    }
-
-                    newCategory['overrides'].append(newTimeSettingSection)
+            newCategory['overrides'] = get_overrides(timeAvailabilitySection)
 
             for item in section['MenuItems']:
 
@@ -298,31 +280,7 @@ class parsejson:
                 
 
                 timeAvailabilityItem = get_time_settings_item(item)
-
-                if timeAvailabilityItem != None:
-                    for timesItem in timeAvailabilityItem:
-                        
-                        weekDayKey = get_days_mapping_item()                
-
-                        dayAvailability = False
-                    
-                        if timesItem['Period'] != "00:00:00":
-                            dayAvailability = True
-                    
-                        if dayAvailability == False:
-                            continue
-                        
-                        sumTimeString, timeNumberWithDate = get_hours_availability_item()
-                    
-                        paramsJsonToString = get_params_to_string_item()
-
-                        newTimeSettingItem = {
-                            "id": generate_UUID(),
-                            "paramsJson": paramsJsonToString, 
-                            "type": "generic"
-                        }
-
-                        newItem['overrides'].append(newTimeSettingItem)
+                newItem['overrides'] = get_overrides(timeAvailabilityItem)
 
             myDict["categories"].append(newCategory)
 
