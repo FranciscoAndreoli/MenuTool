@@ -62,7 +62,6 @@ class parsejson:
             timeOptions = item['DailySpecialHours']
             return timeOptions
 
-
         def get_days_mapping(dayOfWeek):
             weekDayMapper = {
                 0: "sundayEnabled",
@@ -86,7 +85,7 @@ class parsejson:
             periodNumber = datetime.strptime(periodString, "%H:%M:%S")
 
             sumTime = timeNumber + timedelta(hours=periodNumber.hour, minutes=periodNumber.minute, seconds=periodNumber.second)
-            
+
             sumTimeString = sumTime.strftime("2023-03-01 %H:%M:%S")
 
             timeNumberWithDate = timeNumber.strftime("2023-03-01 %H:%M:%S")
@@ -102,42 +101,52 @@ class parsejson:
                 "name": name,
                 "enabled": True
             }
-            
-            paramsJsonToString = json.dumps(paramsJson)
-            return paramsJsonToString
+
+            # paramsJsonToString = json.dumps(paramsJson)
+            # return paramsJsonToString
+            return paramsJson
 
         def get_overrides(eachTime):
             overrides = []
+            seenTimeSettings = {}
             if eachTime != None:
                 for times in eachTime:
 
+                    if times['Period'] == "00:00:00":
+                        continue
+
                     weekDayKey = get_days_mapping(times['DayOfWeek'])
 
-                    dayAvailability = False
-                    
-                    if times['Period'] != "00:00:00":
-                        dayAvailability = True
-                    
-                    if dayAvailability == False:
-                        continue
-                    
-                    sumTimeString, timeNumberWithDate = get_hours_availability(times['StartTime'], times['Period'])
-                    
-                    paramsJsonToString = get_params_to_string(
-                        weekDayKey,
-                        dayAvailability,
-                        timeNumberWithDate,
-                        sumTimeString,
-                        section['Name']
+                    sumTimeString, timeNumberWithDate = get_hours_availability(
+                        times['StartTime'],
+                        times['Period']
                     )
-                    
-                    newTimeSettingSection = {
+
+                    key = (timeNumberWithDate, sumTimeString)
+
+                    if key in seenTimeSettings:
+                        seenTimeSettings[key].append(weekDayKey)
+                    else:
+                        seenTimeSettings[key] = [weekDayKey]
+
+                for timeSetting, weekDays in seenTimeSettings.items():
+                    newOverride = {
                         "id": generate_UUID(),
-                        "paramsJson": paramsJsonToString, 
+                        "paramsJson": {
+                            "fromTime": timeSetting[0],
+                            "toTime": timeSetting[1],
+                            "name": section['Name'],
+                            "enabled": True
+                        },
                         "type": "generic"
                     }
+                    for day in weekDays:
+                        newOverride["paramsJson"][day] = True
 
-                    overrides.append(newTimeSettingSection)
+                    newOverride["paramsJson"] = json.dumps(newOverride["paramsJson"])
+
+                    overrides.append(newOverride)
+
             return overrides
 
 
@@ -194,7 +203,7 @@ class parsejson:
                     "modifierMembers": [],
                 }
 
-                
+
                 for masterOption in item["MenuItemOptionSets"]:
                     if masterOption["IsMasterOptionSet"] == True:
                         # if item have a master option, its price will be the minimum price of the master option.
@@ -260,7 +269,7 @@ class parsejson:
                         }
 
                         if isMasterOption:
-                            
+
                             priceList = get_mo_prices(optionSet)
 
                             newItemInOptionSet['pricingProfiles'][0]['collectionPrice'] = priceList[index]
@@ -275,9 +284,9 @@ class parsejson:
                         newOptionSet['max'] = 1
                         newOptionSet['min'] = 1
                         newOptionSet['position'] = -1
-                        
+
                     myDict["modifiers"].append(newOptionSet)
-                
+
 
                 timeAvailabilityItem = get_time_settings_item(item)
                 newItem['overrides'] = get_overrides(timeAvailabilityItem)
