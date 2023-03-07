@@ -75,13 +75,13 @@ class parsejson:
                 return resizedImage
 
         def get_name_option_set(name):
-<<<<<<< HEAD
-=======
+
+     
             if name == None or name == "":
                 return "Option"
             else:
                 return name
->>>>>>> d13d6b0918fd28e8e930423239c6333b806b1674
+
 
             if name == None or name == "":
                 return "Option"
@@ -333,7 +333,7 @@ class parsejson:
         for j, first_modifier in enumerate(myDict["modifiers"]):
             for second_modifier in myDict["modifiers"][j+1:]:
 
-<<<<<<< HEAD
+
                 if (first_modifier["caption"].lower() == second_modifier["caption"].lower() and
                     len(first_modifier["items"]) == len(second_modifier["items"]) and
                     first_modifier["max"] == second_modifier["max"] and
@@ -384,7 +384,7 @@ class parsejson:
         # open the file for writing, and save the dictionary as JSON
         with open(path, 'w') as outfile:
             json.dump(myDict, outfile)
-=======
+
             encountered_modifiers = {}
 
             for j, first_modifier in enumerate(my_dict["modifiers"]):
@@ -444,4 +444,3 @@ class parsejson:
             # open the file for writing, and save the dictionary as JSON
             with open(path, 'w') as outfile:
                 json.dump(my_dict, outfile)
->>>>>>> d13d6b0918fd28e8e930423239c6333b806b1674
