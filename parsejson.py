@@ -75,6 +75,13 @@ class parsejson:
                 return resizedImage
 
         def get_name_option_set(name):
+<<<<<<< HEAD
+=======
+            if name == None or name == "":
+                return "Option"
+            else:
+                return name
+>>>>>>> d13d6b0918fd28e8e930423239c6333b806b1674
 
             if name == None or name == "":
                 return "Option"
@@ -326,6 +333,7 @@ class parsejson:
         for j, first_modifier in enumerate(myDict["modifiers"]):
             for second_modifier in myDict["modifiers"][j+1:]:
 
+<<<<<<< HEAD
                 if (first_modifier["caption"].lower() == second_modifier["caption"].lower() and
                     len(first_modifier["items"]) == len(second_modifier["items"]) and
                     first_modifier["max"] == second_modifier["max"] and
@@ -376,3 +384,64 @@ class parsejson:
         # open the file for writing, and save the dictionary as JSON
         with open(path, 'w') as outfile:
             json.dump(myDict, outfile)
+=======
+            encountered_modifiers = {}
+
+            for j, first_modifier in enumerate(my_dict["modifiers"]):
+                for second_modifier in my_dict["modifiers"][j+1:]:
+
+                    if first_modifier["caption"] is None or second_modifier["caption"] is None:
+                        first_modifier["caption"] = "Option"
+                        second_modifier["caption"] = "Option"
+
+                    if (first_modifier["caption"].lower() == second_modifier["caption"].lower() and
+                        len(first_modifier["items"]) == len(second_modifier["items"]) and
+                        first_modifier["max"] == second_modifier["max"] and
+                        first_modifier["min"] == second_modifier["min"]):
+
+                        first_modifier["items"] = sorted(first_modifier["items"], key=lambda x: x["caption"])
+                        second_modifier["items"] = sorted(second_modifier["items"], key=lambda x: x["caption"])
+
+                        flag = 0
+                        for i in range(len(first_modifier["items"])):
+                           if (first_modifier["items"][i]["caption"] == second_modifier["items"][i]["caption"] and
+                               first_modifier["items"][i]["enabled"] == second_modifier["items"][i]["enabled"] and
+                               first_modifier["items"][i]["pricingProfiles"][0]["collectionPrice"] == second_modifier["items"][i]["pricingProfiles"][0]["collectionPrice"] and
+                               first_modifier["items"][i]["pricingProfiles"][0]["collectionTax"] == second_modifier["items"][i]["pricingProfiles"][0]["collectionTax"]):
+
+                               flag += 1
+                               if flag >= len(first_modifier["items"]):
+                                    # Remove duplicate modifier
+                                    id_to_remove = second_modifier["id"]
+                                    encountered_modifiers[id_to_remove] = first_modifier["id"]
+
+            # Replace duplicate modifier id with the original modifier id
+            for key in encountered_modifiers:
+                #print(key)
+                if key in encountered_modifiers.values():
+                   valor = encountered_modifiers[key]
+                   clave = list(encountered_modifiers.keys())[list(encountered_modifiers.values()).index(key)]
+                   encountered_modifiers[clave] = valor
+
+            # Remove encountered duplicate modifiers using list comprehension
+            my_dict["modifiers"] = [modifier for modifier in my_dict["modifiers"] if modifier["id"] not in encountered_modifiers]
+
+            if(len(encountered_modifiers) > 0):
+                #example output: {51038380: 51038379,
+                                 #51038381: 51038379,
+                                 #51038386: 51038379,
+                                 #51038387: 51038379,
+                                 #51038388: 51038385}
+                for categories in my_dict["categories"]:
+                    for item in categories["items"]:
+                        for modifierMember in item["modifierMembers"]:
+                            if modifierMember["modifierId"] in encountered_modifiers:
+                                modifierMember["modifierId"] = encountered_modifiers[modifierMember["modifierId"]]
+
+
+            # specify the path to save the file, including the desired name
+            path = os.path.expanduser("~/Desktop/my_POS_JSON.json")
+            # open the file for writing, and save the dictionary as JSON
+            with open(path, 'w') as outfile:
+                json.dump(my_dict, outfile)
+>>>>>>> d13d6b0918fd28e8e930423239c6333b806b1674
