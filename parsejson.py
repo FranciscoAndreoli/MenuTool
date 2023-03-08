@@ -7,11 +7,11 @@ class parsejson:
     def __init__(self):
         pass
 
-    def slot_generateNewJSON(self, datos): 
+    def slot_generateNewJSON(self, datos):
 
         def generate_UUID():
-            '''Returns a Universally Unique Identifier'''
-            return str(uuid.uuid4())
+                    '''Returns a Universally Unique Identifier'''
+                    return str(uuid.uuid4())
 
         def store_name():
             '''Returns the name of the store'''
@@ -56,11 +56,13 @@ class parsejson:
 
         def get_time_settings_section(section):
             timeOptions = section['MenuSectionAvailability']['AvailableTimes']
-            return timeOptions
+            nameSection = section['Name']
+            return timeOptions, nameSection
 
         def get_time_settings_item(item):
             timeOptions = item['DailySpecialHours']
-            return timeOptions
+            nameItem = item['Name']
+            return timeOptions, nameItem
 
         def get_days_mapping(dayOfWeek):
             weekDayMapper = {
@@ -92,13 +94,12 @@ class parsejson:
 
             return sumTimeString, timeNumberWithDate
 
-
-        def get_params_to_string(weekDayKey, dayAvailability, timeNumberWithDate, sumTimeString, name):
+        def get_params_to_string(weekDayKey, dayAvailability, timeNumberWithDate, sumTimeString, names):
             paramsJson = {
                 weekDayKey: dayAvailability,
                 "fromTime": timeNumberWithDate,
                 "toTime": sumTimeString,
-                "name": name,
+                "name": names,
                 "enabled": True
             }
 
@@ -106,7 +107,7 @@ class parsejson:
             # return paramsJsonToString
             return paramsJson
 
-        def get_overrides(eachTime):
+        def get_overrides(eachTime, name):
             overrides = []
             seenTimeSettings = {}
             if eachTime != None:
@@ -135,7 +136,7 @@ class parsejson:
                         "paramsJson": {
                             "fromTime": timeSetting[0],
                             "toTime": timeSetting[1],
-                            "name": section['Name'],
+                            "name": name,
                             "enabled": True
                         },
                         "type": "generic"
@@ -170,8 +171,8 @@ class parsejson:
                 "items": []
             }
 
-            timeAvailabilitySection = get_time_settings_section(section)
-            newCategory['overrides'] = get_overrides(timeAvailabilitySection)
+            timeAvailabilitySection, nameSection = get_time_settings_section(section)
+            newCategory['overrides'] = get_overrides(timeAvailabilitySection, nameSection)
 
             for item in section['MenuItems']:
 
@@ -288,13 +289,13 @@ class parsejson:
                     myDict["modifiers"].append(newOptionSet)
 
 
-                timeAvailabilityItem = get_time_settings_item(item)
-                newItem['overrides'] = get_overrides(timeAvailabilityItem)
+                timeAvailabilityItem, nameItem = get_time_settings_item(item)
+                newItem['overrides'] = get_overrides(timeAvailabilityItem, nameItem)
 
             myDict["categories"].append(newCategory)
 
 
-        #print(json.dumps(my_dict, indent=2))
+        #print(json.dumps(myDict, indent=2))
 
         # specify the path to save the file, including the desired name
         path = os.path.expanduser("~/Desktop/my_POS_JSON.json")
