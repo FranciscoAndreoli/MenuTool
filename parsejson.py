@@ -349,28 +349,28 @@ class parsejson:
                                 id_to_remove = second_modifier["id"]
                                 encountered_modifiers[id_to_remove] = first_modifier["id"]
 
-                # Replace duplicate modifier id with the original modifier id
-                for key in encountered_modifiers:
+        # Replace duplicate modifier id with the original modifier id
+        for key in encountered_modifiers:
 
-                    if key in encountered_modifiers.values():
-                       valor = encountered_modifiers[key]
-                       clave = list(encountered_modifiers.keys())[list(encountered_modifiers.values()).index(key)]
-                       encountered_modifiers[clave] = valor
+            if key in encountered_modifiers.values():
+               valor = encountered_modifiers[key]
+               clave = list(encountered_modifiers.keys())[list(encountered_modifiers.values()).index(key)]
+               encountered_modifiers[clave] = valor
 
-                # Remove encountered duplicate modifiers using list comprehension
-                myDict["modifiers"] = [modifier for modifier in myDict["modifiers"] if modifier["id"] not in encountered_modifiers]
+        # Remove encountered duplicate modifiers using list comprehension
+        myDict["modifiers"] = [modifier for modifier in myDict["modifiers"] if modifier["id"] not in encountered_modifiers]
 
-                if(len(encountered_modifiers) > 0):
-                    #example output: {51038380: 51038379,
-                                     #51038381: 51038379,
-                                     #51038386: 51038379,
-                                     #51038387: 51038379,
-                                     #51038388: 51038385}
-                    for categories in myDict["categories"]:
-                        for item in categories["items"]:
-                            for modifierMember in item["modifierMembers"]:
-                                if modifierMember["modifierId"] in encountered_modifiers:
-                                    modifierMember["modifierId"] = encountered_modifiers[modifierMember["modifierId"]]
+        if(len(encountered_modifiers) > 0):
+            #example output: {51038380: 51038379,
+                             #51038381: 51038379,
+                             #51038386: 51038379,
+                             #51038387: 51038379,
+                             #51038388: 51038385}
+            for categories in myDict["categories"]:
+                for item in categories["items"]:
+                    for modifierMember in item["modifierMembers"]:
+                        if modifierMember["modifierId"] in encountered_modifiers:
+                            modifierMember["modifierId"] = encountered_modifiers[modifierMember["modifierId"]]
 
 
         # specify the path to save the file, including the desired name
