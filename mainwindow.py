@@ -239,11 +239,13 @@ class MainWindow(QMainWindow):
 
             QMessageBox.warning(self, 'Warning',
             f'You have an unnamed Option Set title in "{seccion2}" Section -> "{items2}" item, correct it and upload the file again.',QMessageBox.Ok)
-        if emptyOsItems[1] == True:
+
+        if emptyOsItems is not None and emptyOsItems[1] == True:
 
             info = emptyOsItems[0]
             QMessageBox.warning(self, 'Warning',
             f'You have an unnamed Option Set item in "{info[0][0]}" Section -> "{info[0][1]}" Item -> "{info[0][2]}" Option Set. Correct it and upload the file again.',QMessageBox.Ok)
+
 #############################################################################################
 #############################################################################################
 #SETLISTS

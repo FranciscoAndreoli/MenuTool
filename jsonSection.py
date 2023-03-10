@@ -81,6 +81,8 @@ class jsonSection:
                             print(emptyValues)
 
                             return emptyValues, flag
+                        else:
+                            return None
 #Checks if there are linking codes
     def find_link_codes(self, datos):
         linkCodes = []
