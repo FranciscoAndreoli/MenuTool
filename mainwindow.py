@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('Menu Editing Tool')
         self.setWindowIcon(QIcon('.\images\iconoFlipdish.png'))
+        #button ejemplo
 
         #self.ui.stackedWidget.hide()
         self.ui.TAXBUTTON.clicked.connect(self.clickedTAXBUTTON)
@@ -126,7 +127,6 @@ class MainWindow(QMainWindow):
 
 ##########################################################################################
 ##########################################################################################
-
 #sets the screen for working with TAXES
     def clickedTAXBUTTON(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.taxPage)
@@ -180,6 +180,7 @@ class MainWindow(QMainWindow):
             global datos
             file = archivo[0]
             datos = jsonSection.openJson(jsonSection,file)
+            self.find_empty_values()
             self.setTaxList()
             self.setSectionList()
             self.setItemsList()
@@ -199,7 +200,50 @@ class MainWindow(QMainWindow):
         elif reply == QMessageBox.No:
             event.ignore()
 
+#Searchs for empty items.
+    def find_empty_values(self):
 
+        secciones = jsonSection.slot_mostrarSecciones(jsonSection,datos)
+        items = jsonSection.slot_mostrarItems(jsonSection,datos)
+        osTitles  = jsonSection.slot_mostrarOS(jsonSection,datos)
+        emptyOsItems = jsonSection.find_empty_values(jsonSection,datos)
+
+
+        print(emptyOsItems)
+        if "" in secciones or None in secciones:
+
+            QMessageBox.warning(self, 'Warning',
+            'You have an unnamed section in your menu, correct it and upload the file again.',QMessageBox.Ok)
+
+        if "" in items or None in items:
+            seccion = ""
+            for section in datos["MenuSections"]:
+                for item in section["MenuItems"]:
+                    if item["Name"] == "" or item["Name"] == None:
+                        seccion = section["Name"]
+                        break
+
+            QMessageBox.warning(self, 'Warning',f'You have an unnamed item in "{seccion}" section, correct it and upload the file again.',QMessageBox.Ok)
+
+        if "" in osTitles or None in osTitles:
+            seccion2 = ""
+            items2 = ""
+
+            for section in datos["MenuSections"]:
+                for item in section["MenuItems"]:
+                    for OS in item["MenuItemOptionSets"]:
+                        if OS["Name"] == "" or OS["Name"] == None:
+                            seccion2 = section["Name"]
+                            items2 = item["Name"]
+                            break
+
+            QMessageBox.warning(self, 'Warning',
+            f'You have an unnamed Option Set title in "{seccion2}" Section -> "{items2}" item, correct it and upload the file again.',QMessageBox.Ok)
+        if emptyOsItems[1] == True:
+
+            info = emptyOsItems[0]
+            QMessageBox.warning(self, 'Warning',
+            f'You have an unnamed Option Set item in "{info[0][0]}" Section -> "{info[0][1]}" Item -> "{info[0][2]}" Option Set. Correct it and upload the file again.',QMessageBox.Ok)
 #############################################################################################
 #############################################################################################
 #SETLISTS
@@ -217,6 +261,7 @@ class MainWindow(QMainWindow):
         self.ui.sectionList_2.clear()
         self.ui.sectionList_3.clear()
         secciones = jsonSection.slot_mostrarSecciones(jsonSection,datos)
+
         secciones.insert(0,"Change All")
         for i in range(0,len(secciones)):
             self.ui.sectionList.addItem(str(secciones[i]))
@@ -229,6 +274,7 @@ class MainWindow(QMainWindow):
         self.ui.itemsList_2.clear()
         self.ui.itemsList_3.clear()
         items = jsonSection.slot_mostrarItems(jsonSection,datos)
+
         items.insert(0,"Change All")
         self.ui.itemsList.addItem(items[0])
         self.ui.itemsList_2.addItem(items[0])
@@ -244,22 +290,25 @@ class MainWindow(QMainWindow):
                 self.ui.itemsList_3.addItem(str(section)  + ": " + str(items[i]))
 
 
-#sets the list of OS available on the menu
+#sets the lists of OS available on the menu
     def setOSList(self):
         global osFjson
         self.ui.osList.clear()
         self.ui.osList_2.clear()
-        osFjson = jsonSection.slot_mostrarOS(jsonSection,datos)
+        osFjson  = jsonSection.slot_mostrarOS(jsonSection,datos)
         os = ""
         osOp = list()
+        print(osFjson)
+
         for i in range(0,len(osFjson)):
             for j in range(0,len(datos["MenuSections"])):
                 for k in range(0,len(datos["MenuSections"][j]["MenuItems"])):
                     for l in range(0,len(datos["MenuSections"][j]["MenuItems"][k]["MenuItemOptionSets"])):
-                        if osFjson[i] == datos["MenuSections"][j]["MenuItems"][k]["MenuItemOptionSets"][l]['Name']:
+                        if osFjson [i] == datos["MenuSections"][j]["MenuItems"][k]["MenuItemOptionSets"][l]['Name']:
                             os = datos["MenuSections"][j]["MenuItems"][k]["MenuItemOptionSets"][l]['Name']
                             for m in range(0,len(datos["MenuSections"][j]["MenuItems"][k]["MenuItemOptionSets"][l]["MenuItemOptionSetItems"])):
                                 osOp.append(datos["MenuSections"][j]["MenuItems"][k]["MenuItemOptionSets"][l]["MenuItemOptionSetItems"][m]['Name'])
+
             if os == None and osOp == []:
                 pass
             elif os != None and osOp == []:
@@ -308,6 +357,11 @@ class MainWindow(QMainWindow):
         global data
         osOptions2.clear()
         self.ui.optionsList_2.clear()
+        """section = None
+        item = None
+        optionSet = None
+        unnamedItems = []"""
+
         for i in range(0,len(osFjson)):
             for j in range(0,len(datos["MenuSections"])):
                 for k in range(0,len(datos["MenuSections"][j]["MenuItems"])):
@@ -332,6 +386,21 @@ class MainWindow(QMainWindow):
                 selfCurrentT2 = None
             if self.ui.osList_2.currentText() == data or selfCurrentT2 == data:
                 self.ui.optionsList_2.addItem(osOptions2[i])
+
+        """for sections in datos["MenuSections"]:
+            for items in sections["MenuItems"]:
+                for optionSets in items["MenuItemOptionSets"]:
+                    for itemsInOptionSets in optionSets["MenuItemOptionSetItems"]:
+                        if itemsInOptionSets["Name"] == "" or itemsInOptionSets["Name"] == None:
+                            section = sections["Name"]
+                            item = items["Name"]
+                            optionSet = optionSets["Name"]
+                            unnamedItems.append((section, item, optionSet))
+                            break
+        if unnamedItems:
+
+            message = '\n'.join([f'You have an unnamed item inside an Option Set in "{section}" Section -> "{item}" item -> "{optionSet}" Option Set. Correct it and upload the file again.' for section, item, optionSet in unnamedItems])
+            QMessageBox.warning(self, 'Warning', message, QMessageBox.Ok)"""
 
 #sets the list of options and items that matches the search
     def slot_setSSList(self):
@@ -1003,8 +1072,14 @@ class MainWindow(QMainWindow):
         if datos == None:
             QMessageBox.warning(self, 'Warning', 'You must load a Json File first!',QMessageBox.Ok)
         else:
-            parsejson.slot_generate_new_JSON(parsejson, datos)
-            QMessageBox.information(self, 'Success!','The POS Json file has been created, check your desktop.',QMessageBox.Ok)
+            linkCodes = jsonSection.find_link_codes(jsonSection,datos)
+            if linkCodes[1] == True:
+                values = linkCodes[0]
+                QMessageBox.warning(self, 'Warning',
+                f'Link codes are not allow in POS Menus. You have one in "{values[0][0]}" Section -> "{values[0][1]}" Item -> "{values[0][2]}" Option Set. Delete it and upload the file again.',QMessageBox.Ok)
+            else:
+                parsejson.slot_generate_new_JSON(parsejson, datos)
+                QMessageBox.information(self, 'Success!','The POS Json file has been created, check your desktop.',QMessageBox.Ok)
 
 
 

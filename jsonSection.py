@@ -20,14 +20,16 @@ class jsonSection:
 #sends the sections available to the mainwindow
     def slot_mostrarSecciones(self,datos):
         secciones = list()
-        for section in datos['MenuSections']:
+        for section in datos['MenuSections']:   
+
             secciones.append(section['Name'])
+
         return secciones
 
 #shows a list of the os on the menu
     def slot_mostrarOS(self,datos):
         os = list()
-        os1 = ""
+        os1 = None
         for i in range(0,len(datos["MenuSections"])):
             for k in range(0,len(datos["MenuSections"][i]["MenuItems"])):
                 for l in range(0,len(datos["MenuSections"][i]["MenuItems"][k]["MenuItemOptionSets"])):
@@ -40,6 +42,7 @@ class jsonSection:
                     else:
                         os.append(os1)
         return os
+
 #shows a list of the items on the menu and in which sections you can find them
     def slot_mostrarItems(self,datos):
         items = list()
@@ -55,6 +58,48 @@ class jsonSection:
                     item = datos["MenuSections"][i]["MenuItems"][k]['Name']
                     items.append(item)
         return items
+
+#checks if any item inside an OS is empty
+    def find_empty_values(self,datos):
+
+        emptyValues = []
+        seccion = ""
+        item = ""
+        optionSetTitle = ""
+        flag = False
+        for section in datos["MenuSections"]:
+            for items in section["MenuItems"]:
+                for optionSets in items["MenuItemOptionSets"]:
+                    for optionSetItems in optionSets["MenuItemOptionSetItems"]:
+                        if optionSetItems["Name"] == "" or optionSetItems["Name"] == None:
+
+                            seccion = section["Name"]
+                            item = items["Name"]
+                            optionSetTitle = optionSets["Name"]
+                            flag = True
+                            emptyValues.append((seccion, item, optionSetTitle))
+                            print(emptyValues)
+
+                            return emptyValues, flag
+#Checks if there are linking codes
+    def find_link_codes(self, datos):
+        linkCodes = []
+        seccion = ""
+        item = ""
+        optionSetTitle = ""
+        flag = False
+        for section in datos["MenuSections"]:
+            for items in section["MenuItems"]:
+                for optionSets in items["MenuItemOptionSets"]:
+                    for optionSetItems in optionSets["MenuItemOptionSetItems"]:
+                        if optionSetItems["NextMenuItemOptionSetId"] != None:
+                            seccion = section["Name"]
+                            item = items["Name"]
+                            optionSetTitle = optionSets["Name"]
+                            flag = True
+                            linkCodes.append((seccion, item, optionSetTitle))
+
+                            return linkCodes, flag
 
 #changes the taxes for the selected sections (only items for now)
     def slot_changeTaxSelectedSections(self,datos,secciones,tax):

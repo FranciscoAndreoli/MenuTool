@@ -68,23 +68,14 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_3 = QGridLayout(self.centralwidget)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.horizontalSpacer_22 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_3.addItem(self.horizontalSpacer_22, 0, 0, 1, 1)
-
-        self.horizontalSpacer_23 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_3.addItem(self.horizontalSpacer_23, 0, 4, 1, 1)
-
-        self.DRINKSBUTTON = QPushButton(self.centralwidget)
-        self.DRINKSBUTTON.setObjectName(u"DRINKSBUTTON")
-
-        self.gridLayout_3.addWidget(self.DRINKSBUTTON, 0, 3, 1, 1)
-
         self.TAXBUTTON = QPushButton(self.centralwidget)
         self.TAXBUTTON.setObjectName(u"TAXBUTTON")
 
         self.gridLayout_3.addWidget(self.TAXBUTTON, 0, 1, 1, 1)
+
+        self.horizontalSpacer_23 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_3.addItem(self.horizontalSpacer_23, 0, 4, 1, 1)
 
         self.stackedWidget = QStackedWidget(self.centralwidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
@@ -541,6 +532,10 @@ class Ui_MainWindow(object):
         self.tab_3.setObjectName(u"tab_3")
         self.gridLayout_6 = QGridLayout(self.tab_3)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_3, 0, 2, 1, 1)
+
         self.optionSetModification = QGroupBox(self.tab_3)
         self.optionSetModification.setObjectName(u"optionSetModification")
         sizePolicy1.setHeightForWidth(self.optionSetModification.sizePolicy().hasHeightForWidth())
@@ -579,10 +574,6 @@ class Ui_MainWindow(object):
 
 
         self.gridLayout_6.addWidget(self.optionSetModification, 0, 1, 1, 1)
-
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_3, 0, 2, 1, 1)
 
         self.horizontalSpacer_9 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -870,6 +861,15 @@ class Ui_MainWindow(object):
 
         self.gridLayout_3.addWidget(self.PRICEBUTTON, 0, 2, 1, 1)
 
+        self.DRINKSBUTTON = QPushButton(self.centralwidget)
+        self.DRINKSBUTTON.setObjectName(u"DRINKSBUTTON")
+
+        self.gridLayout_3.addWidget(self.DRINKSBUTTON, 0, 3, 1, 1)
+
+        self.horizontalSpacer_22 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_3.addItem(self.horizontalSpacer_22, 0, 0, 1, 1)
+
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.gridLayout_3.addItem(self.verticalSpacer, 2, 0, 1, 1)
@@ -921,7 +921,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.setCurrentIndex(1)
         self.tabWidget_2.setCurrentIndex(0)
         self.priceListSelected.setCurrentIndex(0)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(2)
         self.tabWidget_3.setCurrentIndex(0)
 
 
@@ -953,7 +953,6 @@ class Ui_MainWindow(object):
         self.actionPrice_Options.setText(QCoreApplication.translate("MainWindow", u"Price Options", None))
         self.actionCoca_ColaChecker.setText(QCoreApplication.translate("MainWindow", u"Coca-Cola Checker", None))
         self.actionParse_JSON.setText(QCoreApplication.translate("MainWindow", u"Parse JSON ", None))
-        self.DRINKSBUTTON.setText(QCoreApplication.translate("MainWindow", u"Drinks Modification", None))
         self.TAXBUTTON.setText(QCoreApplication.translate("MainWindow", u"Tax Modifications", None))
         self.sectionModification_2.setTitle(QCoreApplication.translate("MainWindow", u"Section Modifications", None))
         self.addSection_2.setText(QCoreApplication.translate("MainWindow", u"Add Section", None))
@@ -1037,6 +1036,7 @@ class Ui_MainWindow(object):
         self.imVoucherSS.setText(QCoreApplication.translate("MainWindow", u"Implement Voucher", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_12), QCoreApplication.translate("MainWindow", u"Smart Search", None))
         self.PRICEBUTTON.setText(QCoreApplication.translate("MainWindow", u"Price Modifications", None))
+        self.DRINKSBUTTON.setText(QCoreApplication.translate("MainWindow", u"Drinks Modification", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"Edit", None))
         self.menuTax_Options.setTitle(QCoreApplication.translate("MainWindow", u"Tax Options", None))
