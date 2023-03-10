@@ -1,17 +1,17 @@
 import json
 import uuid
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 class parsejson:
     def __init__(self):
         pass
 
-    def slot_generate_new_JSON(self, datos):
+    def slot_generateNewJSON(self, datos):
 
         def generate_UUID():
-                    '''Returns a Universally Unique Identifier'''
-                    return str(uuid.uuid4())
+            '''Returns a Universally Unique Identifier'''
+            return str(uuid.uuid4())
 
         def store_name():
 
@@ -76,7 +76,7 @@ class parsejson:
                 return resizedImage
 
         def get_name_option_set(name):
-     
+
             if name == None or name == "":
                 return "Option"
             else:
@@ -85,14 +85,16 @@ class parsejson:
         def get_time_settings_section(section):
 
             timeOptions = section['MenuSectionAvailability']['AvailableTimes']
+            nameSection = section['Name']
 
-            return timeOptions
+            return timeOptions, nameSection
 
         def get_time_settings_item(item):
 
             timeOptions = item['DailySpecialHours']
+            nameItem = item['Name']
 
-            return timeOptions
+            return timeOptions, nameItem
 
         def get_days_mapping(dayOfWeek):
 
@@ -110,25 +112,28 @@ class parsejson:
 
             return weekDayKey
 
-        def get_hours_availability(startTime, period):
+        def get_hours_availability(startTimeString, periodString):
 
-            timeString = startTime
-            timeNumber = datetime.strptime(timeString, "%H:%M:%S")
-            periodString = period
+            dateNumber = date.today()
+            dateString = dateNumber.strftime("%Y-%m-%d")
+
+            timeNumber = datetime.strptime(startTimeString, "%H:%M:%S")
             periodNumber = datetime.strptime(periodString, "%H:%M:%S")
+
             sumTime = timeNumber + timedelta(hours=periodNumber.hour, minutes=periodNumber.minute, seconds=periodNumber.second)
-            sumTimeString = sumTime.strftime("2023-03-01 %H:%M:%S")
-            timeNumberWithDate = timeNumber.strftime("2023-03-01 %H:%M:%S")
+
+            sumTimeString = sumTime.strftime(f"{dateString} %H:%M:%S")
+            timeNumberWithDate = timeNumber.strftime(f"{dateString} %H:%M:%S")
 
             return sumTimeString, timeNumberWithDate
 
-        def get_params_to_string(weekDayKey, dayAvailability, timeNumberWithDate, sumTimeString, name):
+        def get_params_to_string(weekDayKey, dayAvailability, timeNumberWithDate, sumTimeString, names):
 
             paramsJson = {
                 weekDayKey: dayAvailability,
                 "fromTime": timeNumberWithDate,
                 "toTime": sumTimeString,
-                "name": name,
+                "name": names,
                 "enabled": True
             }
 
@@ -137,7 +142,7 @@ class parsejson:
 
             return paramsJson
 
-        def get_overrides(eachTime):
+        def get_overrides(eachTime, name):
 
             overrides = []
             seenTimeSettings = {}
@@ -171,7 +176,7 @@ class parsejson:
                         "paramsJson": {
                             "fromTime": timeSetting[0],
                             "toTime": timeSetting[1],
-                            "name": section['Name'],
+                            "name": f"{name} - hidden",
                             "enabled": True
                         },
                         "type": "generic"
@@ -206,8 +211,8 @@ class parsejson:
                 "items": []
             }
 
-            timeAvailabilitySection = get_time_settings_section(section)
-            newCategory['overrides'] = get_overrides(timeAvailabilitySection)
+            timeAvailabilitySection, nameSection = get_time_settings_section(section)
+            newCategory['overrides'] = get_overrides(timeAvailabilitySection, nameSection)
 
             for item in section['MenuItems']:
 
@@ -220,6 +225,11 @@ class parsejson:
                     "id": generate_UUID(),
                     "notes": item["Description"],
                     "imageUrl": get_image(item["ImageUrl"]),
+                    "paramsJson": {
+                        "kdsConfiguration": {
+                            "kdsCaption": item['Name']
+                        }
+                    },
                     "overrides": [],
                     "pricingProfiles": [ {
                         "collectionPrice": item['Price'],
@@ -238,6 +248,9 @@ class parsejson:
                     } ],
                     "modifierMembers": [],
                 }
+
+                newItem["paramsJson"] = json.dumps(newItem["paramsJson"])
+
                 for masterOption in item["MenuItemOptionSets"]:
 
                     if masterOption["IsMasterOptionSet"] == True:
@@ -283,6 +296,11 @@ class parsejson:
                             "caption": osItem['Name'],
                             "enabled": osItem['IsAvailable'],
                             "id": osItem['MenuItemOptionSetItemId'],
+                            "paramsJson": {
+                                "kdsConfiguration": {
+                                    "kdsCaption": osItem['Name']
+                                }
+                            },
                             "overrides": [],
                             "pricingProfiles": [ {
                                 "collectionPrice": osItem['Price'],
@@ -302,6 +320,8 @@ class parsejson:
                             "modifierMembers": []
                         }
 
+                        newItemInOptionSet["paramsJson"] = json.dumps(newItemInOptionSet["paramsJson"])
+
                         if isMasterOption:
                             priceList = get_mo_prices(optionSet)
                             newItemInOptionSet['pricingProfiles'][0]['collectionPrice'] = priceList[index]
@@ -316,8 +336,8 @@ class parsejson:
                         newOptionSet['position'] = -1
                     myDict["modifiers"].append(newOptionSet)
 
-                timeAvailabilityItem = get_time_settings_item(item)
-                newItem['overrides'] = get_overrides(timeAvailabilityItem)
+                timeAvailabilityItem, nameItem = get_time_settings_item(item)
+                newItem['overrides'] = get_overrides(timeAvailabilityItem, nameItem)
 
             myDict["categories"].append(newCategory)
 
@@ -353,28 +373,30 @@ class parsejson:
         for key in encountered_modifiers:
 
             if key in encountered_modifiers.values():
-               valor = encountered_modifiers[key]
-               clave = list(encountered_modifiers.keys())[list(encountered_modifiers.values()).index(key)]
-               encountered_modifiers[clave] = valor
+                valor = encountered_modifiers[key]
+                clave = list(encountered_modifiers.keys())[list(encountered_modifiers.values()).index(key)]
+                encountered_modifiers[clave] = valor
 
         # Remove encountered duplicate modifiers using list comprehension
         myDict["modifiers"] = [modifier for modifier in myDict["modifiers"] if modifier["id"] not in encountered_modifiers]
 
         if(len(encountered_modifiers) > 0):
             #example output: {51038380: 51038379,
-                             #51038381: 51038379,
-                             #51038386: 51038379,
-                             #51038387: 51038379,
-                             #51038388: 51038385}
+                                #51038381: 51038379,
+                                #51038386: 51038379,
+                                #51038387: 51038379,
+                                #51038388: 51038385}
             for categories in myDict["categories"]:
                 for item in categories["items"]:
                     for modifierMember in item["modifierMembers"]:
                         if modifierMember["modifierId"] in encountered_modifiers:
                             modifierMember["modifierId"] = encountered_modifiers[modifierMember["modifierId"]]
 
+        #print(json.dumps(myDict, indent=2))
 
         # specify the path to save the file, including the desired name
         path = os.path.expanduser("~/Desktop/my_POS_JSON.json")
+
         # open the file for writing, and save the dictionary as JSON
         with open(path, 'w') as outfile:
             json.dump(myDict, outfile)
