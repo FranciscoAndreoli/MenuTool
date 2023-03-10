@@ -1,6 +1,6 @@
 ﻿import json
 import math
-
+#ejemplo git lens
 class jsonSection:
     def __init__(self):
         pass
