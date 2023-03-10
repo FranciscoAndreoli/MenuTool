@@ -219,9 +219,9 @@ class MainWindow(QMainWindow):
         secciones = jsonSection.slot_mostrarSecciones(jsonSection,datos)
         secciones.insert(0,"Change All")
         for i in range(0,len(secciones)):
-            self.ui.sectionList.addItem(secciones[i])
-            self.ui.sectionList_2.addItem(secciones[i])
-            self.ui.sectionList_3.addItem(secciones[i])
+            self.ui.sectionList.addItem(str(secciones[i]))
+            self.ui.sectionList_2.addItem(str(secciones[i]))
+            self.ui.sectionList_3.addItem(str(secciones[i]))
 
 #sets the list of items that are on the menu
     def setItemsList(self):
@@ -237,10 +237,11 @@ class MainWindow(QMainWindow):
             for j in range(0,len(datos["MenuSections"])):
                 if items[i] == datos["MenuSections"][j]['Name']:
                     section = datos["MenuSections"][j]['Name']
+
             if section != items[i]:
-                self.ui.itemsList.addItem(section + ": " + items[i])
-                self.ui.itemsList_2.addItem(section + ": " + items[i])
-                self.ui.itemsList_3.addItem(section + ": " + items[i])
+                self.ui.itemsList.addItem(str(section) + ": " + str(items[i]))
+                self.ui.itemsList_2.addItem(str(section)  + ": " + str(items[i]))
+                self.ui.itemsList_3.addItem(str(section)  + ": " + str(items[i]))
 
 
 #sets the list of OS available on the menu
@@ -1002,7 +1003,7 @@ class MainWindow(QMainWindow):
         if datos == None:
             QMessageBox.warning(self, 'Warning', 'You must load a Json File first!',QMessageBox.Ok)
         else:
-            parsejson.slot_generateNewJSON(parsejson, datos)
+            parsejson.slot_generate_new_JSON(parsejson, datos)
             QMessageBox.information(self, 'Success!','The POS Json file has been created, check your desktop.',QMessageBox.Ok)
 
 
