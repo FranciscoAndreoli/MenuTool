@@ -78,7 +78,7 @@ class jsonSection:
                             optionSetTitle = optionSets["Name"]
                             flag = True
                             emptyValues.append((seccion, item, optionSetTitle))
-                            print(emptyValues)
+                            #print(emptyValues)
 
                             return emptyValues, flag
                         else:
@@ -89,19 +89,21 @@ class jsonSection:
         seccion = ""
         item = ""
         optionSetTitle = ""
-        flag = False
+
         for section in datos["MenuSections"]:
             for items in section["MenuItems"]:
                 for optionSets in items["MenuItemOptionSets"]:
                     for optionSetItems in optionSets["MenuItemOptionSetItems"]:
+
                         if optionSetItems["NextMenuItemOptionSetId"] != None:
+
                             seccion = section["Name"]
                             item = items["Name"]
                             optionSetTitle = optionSets["Name"]
-                            flag = True
+
                             linkCodes.append((seccion, item, optionSetTitle))
 
-                            return linkCodes, flag
+        return linkCodes
 
 #changes the taxes for the selected sections (only items for now)
     def slot_changeTaxSelectedSections(self,datos,secciones,tax):
