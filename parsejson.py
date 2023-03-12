@@ -190,6 +190,15 @@ class parsejson:
 
             return overrides
 
+        def get_frecuency(id):
+            frecuency = 0
+            for categories in myDict["categories"]:
+                for item in categories["items"]:
+                    for modifierMember in item["modifierMembers"]:
+                        if modifierMember["modifierId"] == id:
+                            frecuency += 1
+            return frecuency
+
         myDict = {
                 "franchisorId": generate_UUID(),
                 "id": generate_UUID(),
@@ -392,7 +401,20 @@ class parsejson:
                         if modifierMember["modifierId"] in encountered_modifiers:
                             modifierMember["modifierId"] = encountered_modifiers[modifierMember["modifierId"]]
 
-        #print(json.dumps(myDict, indent=2))
+
+        idDictionary = {}
+        for modifiers in myDict["modifiers"]:
+            idDictionary[modifiers["id"]] = get_frecuency(modifiers["id"])
+
+        #if the OS is unique, it will add the name of the item in the OS title.
+        for id in idDictionary:
+            if idDictionary[id] == 1:
+                for categories in myDict["categories"]:
+                    for item in categories["items"]:
+                        name = item["caption"]
+                        for modifierMember in item["modifierMembers"]:
+                            if modifierMember["modifierId"] == id:
+                                modifierMember["caption"] = "{} - {}".format(modifierMember["caption"], name)
 
         # specify the path to save the file, including the desired name
         path = os.path.expanduser("~/Desktop/my_POS_JSON.json")
