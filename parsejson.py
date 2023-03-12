@@ -7,7 +7,7 @@ class parsejson:
     def __init__(self):
         pass
 
-    def slot_generateNewJSON(self, datos):
+    def slot_generate_new_JSON(self, datos):
 
         def generate_UUID():
             '''Returns a Universally Unique Identifier'''

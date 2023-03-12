@@ -209,10 +209,10 @@ class MainWindow(QMainWindow):
         emptyOsItems = jsonSection.find_empty_values(jsonSection,datos)
 
 
-        print(emptyOsItems)
+        #print(emptyOsItems)
         if "" in secciones or None in secciones:
 
-            QMessageBox.warning(self, 'Warning',
+            QMessageBox.critical(self, 'Error',
             'You have an unnamed section in your menu, correct it and upload the file again.',QMessageBox.Ok)
 
         if "" in items or None in items:
@@ -223,7 +223,7 @@ class MainWindow(QMainWindow):
                         seccion = section["Name"]
                         break
 
-            QMessageBox.warning(self, 'Warning',f'You have an unnamed item in "{seccion}" section, correct it and upload the file again.',QMessageBox.Ok)
+            QMessageBox.critical(self, 'Error',f'You have an unnamed item in "{seccion}" section, correct it and upload the file again.',QMessageBox.Ok)
 
         if "" in osTitles or None in osTitles:
             seccion2 = ""
@@ -237,13 +237,13 @@ class MainWindow(QMainWindow):
                             items2 = item["Name"]
                             break
 
-            QMessageBox.warning(self, 'Warning',
+            QMessageBox.critical(self, 'Error',
             f'You have an unnamed Option Set title in "{seccion2}" Section -> "{items2}" item, correct it and upload the file again.',QMessageBox.Ok)
 
         if emptyOsItems is not None and emptyOsItems[1] == True:
 
             info = emptyOsItems[0]
-            QMessageBox.warning(self, 'Warning',
+            QMessageBox.critical(self, 'Error',
             f'You have an unnamed Option Set item in "{info[0][0]}" Section -> "{info[0][1]}" Item -> "{info[0][2]}" Option Set. Correct it and upload the file again.',QMessageBox.Ok)
 
 #############################################################################################
@@ -1075,13 +1075,17 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, 'Warning', 'You must load a Json File first!',QMessageBox.Ok)
         else:
             linkCodes = jsonSection.find_link_codes(jsonSection,datos)
-            if linkCodes[1] == True:
-                values = linkCodes[0]
-                QMessageBox.warning(self, 'Warning',
-                f'Link codes are not allow in POS Menus. You have one in "{values[0][0]}" Section -> "{values[0][1]}" Item -> "{values[0][2]}" Option Set. Delete it and upload the file again.',QMessageBox.Ok)
-            else:
+            print(linkCodes)
+
+            if not linkCodes: #checks whether a list is empty
+
                 parsejson.slot_generate_new_JSON(parsejson, datos)
                 QMessageBox.information(self, 'Success!','The POS Json file has been created, check your desktop.',QMessageBox.Ok)
+
+            else:
+
+                QMessageBox.critical(self, 'Error',
+                f'Link codes are not allow in POS Menus. You have one in "{linkCodes[0][0]}" Section -> "{linkCodes[0][1]}" Item -> "{linkCodes[0][2]}" Option Set. Delete it and upload the file again.',QMessageBox.Ok)
 
 
 
