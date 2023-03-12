@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
         #button ejemplo
 
         #self.ui.stackedWidget.hide()
+        self.ui.PARSEBUTTON.clicked.connect(self.clickedParse_JSON)
         self.ui.TAXBUTTON.clicked.connect(self.clickedTAXBUTTON)
         self.ui.PRICEBUTTON.clicked.connect(self.clickedPRICEBUTTON)
         self.ui.DRINKSBUTTON.clicked.connect(self.clickedDRINKSBUTTON)
@@ -1074,14 +1075,14 @@ class MainWindow(QMainWindow):
         if datos == None:
             QMessageBox.warning(self, 'Warning', 'You must load a Json File first!',QMessageBox.Ok)
         else:
-            linkCodes = jsonSection.find_link_codes(jsonSection,datos)
-            if linkCodes[1] == True:
-                values = linkCodes[0]
-                QMessageBox.warning(self, 'Warning',
-                f'Link codes are not allow in POS Menus. You have one in "{values[0][0]}" Section -> "{values[0][1]}" Item -> "{values[0][2]}" Option Set. Delete it and upload the file again.',QMessageBox.Ok)
-            else:
-                parsejson.slot_generate_new_JSON(parsejson, datos)
-                QMessageBox.information(self, 'Success!','The POS Json file has been created, check your desktop.',QMessageBox.Ok)
+            # linkCodes = jsonSection.find_link_codes(jsonSection,datos)
+            # if linkCodes[1] == True:
+            #     values = linkCodes[0]
+            #     QMessageBox.warning(self, 'Warning',
+            #     f'Link codes are not allow in POS Menus. You have one in "{values[0][0]}" Section -> "{values[0][1]}" Item -> "{values[0][2]}" Option Set. Delete it and upload the file again.',QMessageBox.Ok)
+            # else:
+            parsejson.slot_generate_new_JSON(parsejson, datos)
+            QMessageBox.information(self, 'Success!','The POS Json file has been created, check your desktop.',QMessageBox.Ok)
 
 
 

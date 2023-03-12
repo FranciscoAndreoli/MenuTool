@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.3.2
+## Created by: Qt User Interface Compiler version 6.4.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -68,14 +68,14 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_3 = QGridLayout(self.centralwidget)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.TAXBUTTON = QPushButton(self.centralwidget)
-        self.TAXBUTTON.setObjectName(u"TAXBUTTON")
+        self.horizontalSpacer_22 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.gridLayout_3.addWidget(self.TAXBUTTON, 0, 1, 1, 1)
+        self.gridLayout_3.addItem(self.horizontalSpacer_22, 0, 0, 1, 1)
 
-        self.horizontalSpacer_23 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.PRICEBUTTON = QPushButton(self.centralwidget)
+        self.PRICEBUTTON.setObjectName(u"PRICEBUTTON")
 
-        self.gridLayout_3.addItem(self.horizontalSpacer_23, 0, 4, 1, 1)
+        self.gridLayout_3.addWidget(self.PRICEBUTTON, 0, 3, 1, 1)
 
         self.stackedWidget = QStackedWidget(self.centralwidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
@@ -854,30 +854,35 @@ class Ui_MainWindow(object):
 
         self.stackedWidget.addWidget(self.drinksPage)
 
-        self.gridLayout_3.addWidget(self.stackedWidget, 1, 0, 1, 5)
-
-        self.PRICEBUTTON = QPushButton(self.centralwidget)
-        self.PRICEBUTTON.setObjectName(u"PRICEBUTTON")
-
-        self.gridLayout_3.addWidget(self.PRICEBUTTON, 0, 2, 1, 1)
-
-        self.DRINKSBUTTON = QPushButton(self.centralwidget)
-        self.DRINKSBUTTON.setObjectName(u"DRINKSBUTTON")
-
-        self.gridLayout_3.addWidget(self.DRINKSBUTTON, 0, 3, 1, 1)
-
-        self.horizontalSpacer_22 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayout_3.addItem(self.horizontalSpacer_22, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.stackedWidget, 1, 0, 1, 6)
 
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.gridLayout_3.addItem(self.verticalSpacer, 2, 0, 1, 1)
 
+        self.horizontalSpacer_23 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.gridLayout_3.addItem(self.horizontalSpacer_23, 0, 5, 1, 1)
+
+        self.TAXBUTTON = QPushButton(self.centralwidget)
+        self.TAXBUTTON.setObjectName(u"TAXBUTTON")
+
+        self.gridLayout_3.addWidget(self.TAXBUTTON, 0, 2, 1, 1)
+
+        self.DRINKSBUTTON = QPushButton(self.centralwidget)
+        self.DRINKSBUTTON.setObjectName(u"DRINKSBUTTON")
+
+        self.gridLayout_3.addWidget(self.DRINKSBUTTON, 0, 4, 1, 1)
+
+        self.PARSEBUTTON = QPushButton(self.centralwidget)
+        self.PARSEBUTTON.setObjectName(u"PARSEBUTTON")
+
+        self.gridLayout_3.addWidget(self.PARSEBUTTON, 0, 1, 1, 1)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 860, 21))
+        self.menubar.setGeometry(QRect(0, 0, 860, 22))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuEdit = QMenu(self.menubar)
@@ -953,7 +958,7 @@ class Ui_MainWindow(object):
         self.actionPrice_Options.setText(QCoreApplication.translate("MainWindow", u"Price Options", None))
         self.actionCoca_ColaChecker.setText(QCoreApplication.translate("MainWindow", u"Coca-Cola Checker", None))
         self.actionParse_JSON.setText(QCoreApplication.translate("MainWindow", u"Parse JSON ", None))
-        self.TAXBUTTON.setText(QCoreApplication.translate("MainWindow", u"Tax Modifications", None))
+        self.PRICEBUTTON.setText(QCoreApplication.translate("MainWindow", u"Price Modifications", None))
         self.sectionModification_2.setTitle(QCoreApplication.translate("MainWindow", u"Section Modifications", None))
         self.addSection_2.setText(QCoreApplication.translate("MainWindow", u"Add Section", None))
         self.priceImpSec.setText(QCoreApplication.translate("MainWindow", u"Implement Price", None))
@@ -1035,8 +1040,9 @@ class Ui_MainWindow(object):
         self.imAlcoholSS.setText(QCoreApplication.translate("MainWindow", u"Implement Alcohol", None))
         self.imVoucherSS.setText(QCoreApplication.translate("MainWindow", u"Implement Voucher", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_12), QCoreApplication.translate("MainWindow", u"Smart Search", None))
-        self.PRICEBUTTON.setText(QCoreApplication.translate("MainWindow", u"Price Modifications", None))
+        self.TAXBUTTON.setText(QCoreApplication.translate("MainWindow", u"Tax Modifications", None))
         self.DRINKSBUTTON.setText(QCoreApplication.translate("MainWindow", u"Drinks Modification", None))
+        self.PARSEBUTTON.setText(QCoreApplication.translate("MainWindow", u"Parse JSON", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"Edit", None))
         self.menuTax_Options.setTitle(QCoreApplication.translate("MainWindow", u"Tax Options", None))
