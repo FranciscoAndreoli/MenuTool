@@ -191,6 +191,7 @@ class parsejson:
             return overrides
 
         def get_frecuency(id):
+            '''Get frecuency of Option sets throughout the menu.'''
             frecuency = 0
             for categories in myDict["categories"]:
                 for item in categories["items"]:
@@ -406,7 +407,7 @@ class parsejson:
         for modifiers in myDict["modifiers"]:
             idDictionary[modifiers["id"]] = get_frecuency(modifiers["id"])
 
-        #if the OS is unique, it will add the name of the item in the OS title.
+        #if the OS is unique (frecuency = 1), it will add the name of the item in the OS title.
         for id in idDictionary:
             if idDictionary[id] == 1:
                 for categories in myDict["categories"]:
@@ -415,6 +416,13 @@ class parsejson:
                         for modifierMember in item["modifierMembers"]:
                             if modifierMember["modifierId"] == id:
                                 modifierMember["caption"] = "{} - {}".format(modifierMember["caption"], name)
+
+
+        #Eliminates hidden sections without items and descriptions.
+        for category in myDict["categories"][:]: #The [:] notation creates a shallow copy of the original list,
+                                                 #which allows you to iterate over the original list while modifying it.
+            if category["enabled"] == False and category["notes"] == None and category["items"] == []:
+                myDict["categories"].remove(category)
 
         # specify the path to save the file, including the desired name
         path = os.path.expanduser("~/Desktop/my_POS_JSON.json")
