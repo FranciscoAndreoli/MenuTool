@@ -153,7 +153,7 @@ class MainWindow(QMainWindow):
 
 #loads the json and sets up all the dropping lists
     def clickedLoad(self):
-        archivo = QFileDialog.getOpenFileName(self, ("Open Json"), "C:\\", ("txt or JSON file (*.json *.txt)"))
+        archivo = QFileDialog.getOpenFileName(self, ("Open JSON"), "C:\\", ("txt or JSON file (*.json *.txt)"))
         #print(archivo) #archivo es una tupla
         #filePath = archivo[0] #filepath es un string
 
@@ -686,7 +686,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             tax = self.ui.taxList.currentIndex()
             jsonSection.slot_changeTaxSelectedSections(jsonSection,datos,section,tax)
@@ -700,7 +700,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             tax = self.ui.taxList.currentIndex()
             jsonSection.slot_changeTaxSelectedItems(jsonSection,datos,item,tax)
@@ -715,7 +715,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             tax = self.ui.taxList.currentIndex()
             jsonSection.slot_changeTaxSelectedOS(jsonSection,datos,auxOS,auxOSMaster,tax)
@@ -731,7 +731,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             tax = self.ui.taxList.currentIndex()
             jsonSection.slot_changeTaxSelectedSS(jsonSection,datos,auxSS,text,tax)
@@ -747,7 +747,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             tax = self.ui.taxList.currentIndex()
             jsonSection.slot_changeTaxAllSections(jsonSection,datos,tax)
@@ -760,7 +760,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             tax = None
             jsonSection.slot_RemoveTaxAllItems(jsonSection,datos,tax)
@@ -773,7 +773,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             jsonSection.save_json(jsonSection,datos,file)
             QMessageBox.information(self, 'Success!',
@@ -895,7 +895,7 @@ class MainWindow(QMainWindow):
         global price
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             if self.ui.priceListSelected.currentText() == "Replace Price":
                 jsonSection.slot_changePriceSelectedSections(jsonSection,datos,section,price,self.ui.modMO.isChecked(),self.ui.modOS.isChecked())
@@ -925,7 +925,7 @@ class MainWindow(QMainWindow):
         global price
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             if self.ui.priceListSelected.currentText() == "Replace Price":
                 jsonSection.slot_changePriceSelectedItems(jsonSection,datos,item,price,self.ui.modMO1.isChecked(),self.ui.modSO1.isChecked())
@@ -955,7 +955,7 @@ class MainWindow(QMainWindow):
         global price
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             if self.ui.priceListSelected.currentText() == "Replace Price":
                 jsonSection.slot_changePriceSelectedOS(jsonSection,datos,auxOS,auxOSMaster,price)
@@ -986,7 +986,7 @@ class MainWindow(QMainWindow):
         global price
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             if self.ui.priceListSelected.currentText() == "Replace Price":
                 jsonSection.slot_changePriceSelectedSelectedSS(jsonSection,datos,auxSS,text,price,self.ui.modMO2.isChecked(),self.ui.modSO2.isChecked())
@@ -1019,7 +1019,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None: #datos es el JSON cargado
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             if self.ui.imVoucherSM.isChecked() == False and self.ui.imAlcoholSM.isChecked() == False:
                 QMessageBox.warning(self, 'Warning',
@@ -1037,7 +1037,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None: #datos es el JSON cargado
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             if self.ui.imVoucherIM.isChecked() == False and self.ui.imAlcoholIM.isChecked() == False:
                 QMessageBox.warning(self, 'Warning',
@@ -1055,7 +1055,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None: #datos es el JSON cargado
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             if self.ui.imVoucherSS.isChecked() == False and self.ui.imAlcoholSS.isChecked() == False:
                 QMessageBox.warning(self, 'Warning',
@@ -1073,15 +1073,18 @@ class MainWindow(QMainWindow):
     def clickedParse_JSON(self):
         global datos
         if datos == None:
-            QMessageBox.warning(self, 'Warning', 'You must load a Json File first!',QMessageBox.Ok)
+            QMessageBox.warning(self, 'Warning', 'You must load a JSON File first!',QMessageBox.Ok)
         else:
             linkCodes = jsonSection.find_link_codes(jsonSection,datos)
             print(linkCodes)
 
             if not linkCodes: #checks whether a list is empty
-
-                parsejson.slot_generate_new_JSON(parsejson, datos)
-                QMessageBox.information(self, 'Success!','The POS Json file has been created, check your desktop.',QMessageBox.Ok)
+                
+                nuevojson, _ = QFileDialog.getSaveFileName(self, ("Save JSON"), "", ("JSON file (*.json)"))
+                
+                if nuevojson:
+                    parsejson.slot_generate_new_JSON(parsejson, datos, nuevojson)
+                    QMessageBox.information(self, 'Success!','The POS JSON file has been created.',QMessageBox.Ok)
 
             else:
 
@@ -1094,7 +1097,7 @@ class MainWindow(QMainWindow):
         global datos
         if datos == None:
             QMessageBox.warning(self, 'Warning',
-            'You must load a Json File first!',QMessageBox.Ok)
+            'You must load a JSON File first!',QMessageBox.Ok)
         else:
             CocaColaUpdates.slot_concidenceSearcher(CocaColaUpdates,datos)
             QMessageBox.information(self, 'Success!',

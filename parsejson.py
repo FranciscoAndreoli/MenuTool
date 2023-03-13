@@ -7,7 +7,7 @@ class parsejson:
     def __init__(self):
         pass
 
-    def slot_generate_new_JSON(self, datos):
+    def slot_generate_new_JSON(self, datos, destinationFilePath):
 
         def generate_UUID():
             '''Returns a Universally Unique Identifier'''
@@ -425,8 +425,8 @@ class parsejson:
                 myDict["categories"].remove(category)
 
         # specify the path to save the file, including the desired name
-        path = os.path.expanduser("~/Desktop/my_POS_JSON.json")
+        # path = os.path.expanduser("~/Desktop/my_POS_JSON.json")
 
         # open the file for writing, and save the dictionary as JSON
-        with open(path, 'w') as outfile:
-            json.dump(myDict, outfile)
+        with open(destinationFilePath, 'w') as outfile:
+            json.dump(myDict, outfile, indent=4)
