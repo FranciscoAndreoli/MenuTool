@@ -917,7 +917,6 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionSave_Json)
         self.menuFile.addAction(self.actionExit)
         self.menuEdit.addAction(self.menuTax_Options.menuAction())
-        self.menuEdit.addAction(self.actionParse_JSON)
         self.menuTax_Options.addAction(self.actionApply_Tax_to_All_Sections)
         self.menuTax_Options.addAction(self.actionRemove_Tax_from_All_Sections)
 

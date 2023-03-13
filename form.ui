@@ -1403,7 +1403,6 @@
      <addaction name="actionRemove_Tax_from_All_Sections"/>
     </widget>
     <addaction name="menuTax_Options"/>
-    <addaction name="actionParse_JSON"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
