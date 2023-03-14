@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.setWindowTitle('Menu Editing Tool')
+        self.setWindowTitle('Menu Editing Tool 1.1.0')
         self.setWindowIcon(QIcon('.\images\iconoFlipdish.png'))
         #button ejemplo
 
@@ -1073,10 +1073,9 @@ class MainWindow(QMainWindow):
     def clickedParse_JSON(self):
         global datos
         if datos == None:
-            QMessageBox.warning(self, 'Warning', 'You must load a JSON File first!',QMessageBox.Ok)
+            QMessageBox.critical(self, 'Error', 'You must load a Json File first!',QMessageBox.Ok)
         else:
             linkCodes = jsonSection.find_link_codes(jsonSection,datos)
-            print(linkCodes)
 
             if not linkCodes: #checks whether a list is empty
                 
