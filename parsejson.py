@@ -200,6 +200,11 @@ class parsejson:
                             frecuency += 1
             return frecuency
 
+        def change_modifiers_name(name, id):
+            for modifiers in myDict["modifiers"]:
+                if modifiers["id"] == id:
+                   modifiers["caption"] = "{} - {}".format(modifiers["caption"], name)
+
         myDict = {
                 "franchisorId": generate_UUID(),
                 "id": generate_UUID(),
@@ -402,10 +407,10 @@ class parsejson:
                         if modifierMember["modifierId"] in encountered_modifiers:
                             modifierMember["modifierId"] = encountered_modifiers[modifierMember["modifierId"]]
 
-
         idDictionary = {}
         for modifiers in myDict["modifiers"]:
             idDictionary[modifiers["id"]] = get_frecuency(modifiers["id"])
+
 
         #if the OS is unique (frecuency = 1), it will add the name of the item in the OS title.
         for id in idDictionary:
@@ -415,6 +420,7 @@ class parsejson:
                         name = item["caption"]
                         for modifierMember in item["modifierMembers"]:
                             if modifierMember["modifierId"] == id:
+                                change_modifiers_name(name, id)
                                 modifierMember["caption"] = "{} - {}".format(modifierMember["caption"], name)
 
 
